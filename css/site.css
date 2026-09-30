@@ -42,6 +42,26 @@ body {
   background: var(--bg-lotus);
 }
 
+.pill-btn {
+  display: inline-block;
+  padding: 8px 18px;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  background: rgba(255, 255, 255, .12);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  transition: background .2s, border-color .2s;
+}
+.pill-btn:hover,
+.pill-btn:focus-visible { border-color: #fff; background: rgba(255, 255, 255, .28); }
+.pill-btn[aria-current="page"] { color: var(--c-violet-900); background: #fff; }
+
+.hero__nav { position: relative; z-index: 3; display: flex; justify-content: space-between; padding: 14px 16px 0; }
+
 .hero__decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .hero__decor--front { z-index: 2; }
 .hero__stage { position: relative; z-index: 1; }
@@ -192,16 +212,31 @@ body {
 /* ───────────── Hero: десктоп — радиальный лотос с псевдо-3D ───────────── */
 
 @media (min-width: 900px) {
+  /* Главная на десктопе — ровно один экран без прокрутки: сцена сжимается вместе с окном */
   .hero {
-    --u: min(100vw / 1920, max(100vh, 560px) / 1080);
-    height: max(100vh, 560px);
+    --u: min(100vw / 1920, 100vh / 1080);
+    height: 100vh;
     padding: 0;
   }
   @supports (height: 100svh) {
     .hero {
-      --u: min(100vw / 1920, max(100svh, 560px) / 1080);
-      height: max(100svh, 560px);
+      --u: min(100vw / 1920, 100svh / 1080);
+      height: 100svh;
     }
+  }
+
+  .hero__nav {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    padding: calc(36 * var(--u)) calc(44 * var(--u));
+    pointer-events: none;
+  }
+  .hero__nav .pill-btn {
+    padding: max(8px, calc(14 * var(--u))) max(18px, calc(36 * var(--u)));
+    font-size: max(14px, calc(26 * var(--u)));
+    pointer-events: auto;
   }
 
   .hero__stage {
@@ -404,6 +439,9 @@ body {
 .content h2 { margin: 0 0 16px; color: var(--c-violet-900); font-size: clamp(26px, 3.2vw, 36px); line-height: 1.15; }
 .content p { margin: 0 0 1em; }
 .content a { color: var(--c-violet-700); }
+.content .resources__list a { border-color: var(--c-violet-500); font-size: 15px; }
+.content .resources__list a:hover,
+.content .resources__list a:focus-visible { background: #f0e2f4; }
 .stub { padding: 12px 16px; border-left: 3px solid var(--c-pink); background: #f4e8f6; font-size: 15px; }
 
 .footer { padding: 28px 20px; color: #fff; font-size: 14px; text-align: center; background: var(--c-violet-900); }
@@ -416,16 +454,20 @@ body {
   position: relative;
   z-index: 3;
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  height: 60px;
-  padding: 0 20px;
+  justify-content: space-between;
+  gap: 8px 16px;
+  min-height: 60px;
+  padding: 8px 20px;
   border-bottom: 1px solid rgba(247, 205, 185, .35);
   background: rgba(79, 50, 122, .72);
   -webkit-backdrop-filter: blur(8px);
   backdrop-filter: blur(8px);
 }
 .top__home { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 17px; font-weight: 600; text-decoration: none; }
-.top__home svg { width: 38px; height: 38px; }
+.top__home svg { width: 40px; height: 40px; }
+.top__links { display: flex; gap: 8px; }
 
 .pn { position: relative; z-index: 2; padding: 14px 0 4px; }
 .pn__list { display: flex; gap: 8px; margin: 0; padding: 2px 16px 12px; overflow-x: auto; list-style: none; }
