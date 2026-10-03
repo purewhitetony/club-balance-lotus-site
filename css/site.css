@@ -453,6 +453,7 @@ body {
 }
 
 .content { min-width: 0; font-size: 18px; line-height: 1.6; }
+.content > :first-child { margin-top: 0; }
 .content h2 { margin: 0 0 16px; color: var(--c-violet-900); font-size: clamp(26px, 3.2vw, 34px); line-height: 1.15; }
 .content p { margin: 0 0 1em; }
 .content a { color: var(--c-violet-700); }
@@ -795,6 +796,131 @@ body {
 .libmap__list summary { padding: 14px 18px; color: var(--c-violet-900); font-weight: 700; cursor: pointer; }
 .content .libmap__list ul { margin: 0; padding: 0 18px 16px 36px; font-size: 15px; line-height: 1.5; }
 
+/* ───────────── Радио Гималаи ───────────── */
+.radio-hero,
+.radio-final {
+  position: relative;
+  overflow: hidden;
+  padding: 34px 28px 30px;
+  border-radius: 24px;
+  color: #fff;
+  text-align: center;
+  background:
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, .16), transparent 60%),
+    linear-gradient(165deg, #2a1c44 0%, #4f327a 55%, #8a5fb0 100%);
+  box-shadow: 0 16px 36px rgba(58, 36, 82, .3);
+}
+.content .radio-hero__slogan { max-width: 640px; margin: 0 auto 22px; font-size: clamp(21px, 2.8vw, 30px); font-weight: 700; letter-spacing: .03em; line-height: 1.25; }
+/* .content p задаёт абзацам margin-top: 0 — поэтому селектор с .content */
+.content .radio-now { margin: 22px 0 0; color: #f4d9ee; font-size: 14px; line-height: 1.5; }
+.radio-now span { color: #fff; font-weight: 600; }
+
+.radio-play {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 26px 8px 8px;
+  border: 0;
+  border-radius: 999px;
+  color: #fff;
+  font: inherit;
+  font-size: 18px;
+  font-weight: 700;
+  background: linear-gradient(100deg, #d0599f, #8a5fb0);
+  box-shadow: 0 8px 22px rgba(184, 80, 156, .45);
+  cursor: pointer;
+  transition: filter .2s, transform .2s;
+}
+.radio-play:hover,
+.radio-play:focus-visible { filter: brightness(1.1); }
+.radio-play:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+.radio-play__icon { position: relative; flex: none; width: 42px; height: 42px; border-radius: 50%; background: #fff; }
+.radio-play__icon::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 14px;
+  height: 16px;
+  margin: auto;
+  transform: translateX(2px);
+  background: var(--c-violet-900);
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+}
+.radio-play.is-playing .radio-play__icon::before,
+.radio-play.is-loading .radio-play__icon::before {
+  transform: none;
+  clip-path: none;
+  background: linear-gradient(90deg, var(--c-violet-900) 0 35%, transparent 35% 65%, var(--c-violet-900) 65%);
+}
+.radio-eq { display: none; align-items: flex-end; gap: 3px; height: 18px; }
+.radio-eq i { width: 3px; height: 100%; border-radius: 2px; background: #fff; transform-origin: bottom; }
+.radio-play.is-playing .radio-eq { display: inline-flex; }
+@media (prefers-reduced-motion: no-preference) {
+  .radio-play.is-loading .radio-play__icon { animation: radio-pulse 1s ease-in-out infinite; }
+  .radio-play.is-playing .radio-eq i { animation: radio-eq .9s ease-in-out infinite alternate; }
+  .radio-eq i:nth-child(2) { animation-delay: -.3s; }
+  .radio-eq i:nth-child(3) { animation-delay: -.6s; }
+  .radio-eq i:nth-child(4) { animation-delay: -.15s; }
+}
+@keyframes radio-pulse { 50% { transform: scale(.85); opacity: .7; } }
+@keyframes radio-eq { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
+
+.radio-intro { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px; align-items: center; margin: 32px 0 8px; }
+.radio-intro__img { margin: 0; }
+.radio-intro__img img { display: block; width: 100%; height: auto; border-radius: 20px; box-shadow: 0 12px 28px rgba(58, 36, 82, .25); }
+.content .radio-intro .lead { margin: 0; }
+@media (max-width: 699px) {
+  .radio-intro { grid-template-columns: 1fr; }
+  .radio-intro__img { max-width: 360px; }
+}
+
+.content .radio-list { padding-left: 0; list-style: none; font-size: 19px; }
+.content .radio-list li { position: relative; margin-bottom: .45em; padding-left: 26px; }
+.radio-list li::before { content: "–"; position: absolute; left: 4px; color: var(--c-pink); font-weight: 700; }
+
+.radio-schedule th { width: 96px; font-variant-numeric: tabular-nums; }
+
+.content .radio-topics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 20px 0; padding: 0; list-style: none; }
+@media (max-width: 599px) { .content .radio-topics { grid-template-columns: 1fr; } }
+.content .radio-topics li { margin: 0; padding: 18px 20px; border: 1px solid #ead9f0; border-radius: 18px; background: #fff; }
+.content .radio-topics h3 { margin: 0 0 6px; }
+.content .radio-topics p { margin: 0; font-size: 16px; line-height: 1.5; }
+
+.radio-final { margin-top: 40px; }
+.content .radio-final__text { max-width: 600px; margin: 0 auto 20px; font-size: clamp(20px, 2.4vw, 26px); font-weight: 700; line-height: 1.3; }
+.radio-channels { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 4px; }
+.content .radio-channel,
+.card .radio-channel {
+  padding: 9px 20px;
+  border: 1px solid rgba(255, 255, 255, .7);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background .2s;
+}
+.content .radio-channel:hover,
+.content .radio-channel:focus-visible { background: rgba(255, 255, 255, .16); }
+
+/* Карточка радио в боковой колонке */
+.radio-card .radio-play { margin: 4px 0 16px; }
+.radio-channels--card { justify-content: flex-start; margin: 0 0 14px; gap: 8px; }
+.card .radio-channels--card .radio-channel { padding: 7px 14px; border-color: var(--c-violet-500); color: var(--c-violet-700); font-size: 14px; }
+.card .radio-channels--card .radio-channel:hover,
+.card .radio-channels--card .radio-channel:focus-visible { background: #f0e2f4; }
+
+/* Йога разума: карточки мужской и женской групп */
+.groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 16px 0 8px; }
+@media (max-width: 599px) { .groups { grid-template-columns: 1fr; } }
+.group-card { padding: 20px 22px; border: 1px solid #ead9f0; border-radius: 18px; background: #fff; box-shadow: 0 10px 30px rgba(79, 50, 122, .06); }
+.content .group-card h3 { margin: 0 0 4px; }
+.content .group-card__admin { margin: 0 0 10px; color: #6b5a7d; font-size: 16px; }
+.content .group-card__contacts { margin: 0 0 12px; padding-left: 0; font-size: 16px; list-style: none; }
+.content .group-card__contacts li { margin-bottom: 4px; }
+.content .group-card p:last-child { margin: 0; font-size: 16px; }
+.group-card__video::before { content: "▶"; margin-right: 6px; font-size: 12px; }
+
 /* Благодарственные письма: превью открывают письмо целиком */
 .letters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 20px 0 28px; }
 @media (max-width: 699px) { .letters { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -1013,6 +1139,16 @@ body {
 .wheel__spin--next { left: 10px; top: calc(var(--cy) + 520 * var(--u)); }
 .wheel__spin--prev { right: 10px; top: calc(var(--cy) + 520 * var(--u)); }
 .wheel__spin--prev svg { transform: rotate(180deg); }
+
+/* На телефоне центр цветка поднят выше шапки: от медальона виден только нижний край,
+   торчат три лепестка — текущий по центру и два соседних. Шапка обрезает цветок по своим краям,
+   чтобы он не просвечивал сквозь полупрозрачную верхнюю панель. */
+@media (max-width: 899px) {
+  .top__hero { --cy: calc(-185 * var(--u)); overflow: hidden; }
+  .wheel { height: calc(540 * var(--u)); }
+  .wheel__spin--next,
+  .wheel__spin--prev { top: calc(var(--cy) + 560 * var(--u)); }
+}
 
 .top__inner { position: relative; z-index: 2; }
 .top__title { padding: 8px var(--gutter) 36px; }
