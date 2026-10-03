@@ -601,6 +601,22 @@ body {
 .figure figcaption { margin-top: 8px; color: #6b5a7d; font-size: 14px; }
 .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 28px 0; }
 
+/* Девиз — заметная плашка в цветах лотоса */
+.motto {
+  margin: 32px 0 8px;
+  padding: 28px 28px 24px;
+  border-radius: 20px;
+  color: #fff;
+  text-align: center;
+  background: linear-gradient(120deg, #6f4c97, #b8509c);
+  box-shadow: 0 12px 30px rgba(111, 76, 151, .25);
+}
+.motto blockquote { margin: 0; }
+.content .motto p { margin: 0; font-size: clamp(24px, 2.6vw, 34px); font-weight: 700; line-height: 1.2; }
+.content .motto p::before { content: "«"; }
+.content .motto p::after { content: "»"; }
+.motto figcaption { margin-top: 10px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
+
 /* Таблица тарифов: на узком экране прокручивается внутри своей рамки */
 .table-wrap { margin: 16px 0 20px; overflow-x: auto; border: 1px solid #ead9f0; border-radius: 16px; background: #fff; }
 .price-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 16px; }
