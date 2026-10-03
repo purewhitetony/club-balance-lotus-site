@@ -601,6 +601,16 @@ body {
 .figure figcaption { margin-top: 8px; color: #6b5a7d; font-size: 14px; }
 .gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin: 28px 0; }
 
+/* Таблица тарифов: на узком экране прокручивается внутри своей рамки */
+.table-wrap { margin: 16px 0 20px; overflow-x: auto; border: 1px solid #ead9f0; border-radius: 16px; background: #fff; }
+.price-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 16px; }
+.price-table th,
+.price-table td { padding: 12px 16px; border-bottom: 1px solid #f0e4f3; text-align: left; }
+.price-table thead th { color: #7b6890; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; background: #faf3fb; }
+.price-table tbody th { color: var(--c-violet-900); }
+.price-table tbody tr:last-child th,
+.price-table tbody tr:last-child td { border-bottom: 0; }
+
 .contacts { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; margin: 0; }
 .contacts dt { font-weight: 700; color: var(--c-violet-900); }
 .contacts dd { margin: 0; }
@@ -780,6 +790,7 @@ body {
   border: 1px solid rgba(255, 255, 255, .6);
   border-radius: 50%;
   color: #fff;
+  text-decoration: none;
   background: rgba(79, 50, 122, .55);
   cursor: pointer;
   transition: background .2s;
@@ -831,6 +842,21 @@ body {
     pointer-events: auto;
   }
 }
+
+/* Возврат «Назад» из кэша: цветок встаёт на место мгновенно */
+.wheel.is-instant .wheel__disc,
+.wheel.is-instant .wpetal__label { transition: none; }
+
+/* Переход между страницами разделов: цветок уже повёрнут к нужному лепестку, поэтому шапка
+   до и после перехода совпадает и при общем затухании стоит на месте, а заголовок и текст
+   плавно сменяются (Chrome, Edge, Safari 18.2+; в остальных — обычный переход).
+   Отдельный view-transition-name цветку не даём: такой слой рисуется поверх страницы
+   без обрезки краем шапки, и лепестки на мгновение просвечивают сквозь текст. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+::view-transition-old(root),
+::view-transition-new(root) { animation-duration: .3s; }
 
 @media (prefers-reduced-motion: reduce) {
   .petal__body, .wpetal__body, .wheel__disc, .wpetal__label, .center__title, .center__info { transition: none; }
