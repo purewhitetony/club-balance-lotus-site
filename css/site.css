@@ -656,6 +656,60 @@ body {
 .content .motto p::after { content: "»"; }
 .motto figcaption { margin-top: 10px; font-size: 13px; letter-spacing: .08em; text-transform: uppercase; opacity: .85; }
 
+/* Книги: серия обложек, книга крупно, каталог по темам, цифры, отзывы */
+.content .covers { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 16px; margin: 20px 0 14px; padding: 0; list-style: none; }
+.content .covers li { margin: 0; color: #6b5a7d; font-size: 14px; line-height: 1.3; text-align: center; }
+.covers a { display: block; margin-bottom: 8px; transition: transform .25s; }
+.covers a:hover,
+.covers a:focus-visible { transform: translateY(-4px); }
+.covers img { display: block; width: 100%; height: auto; aspect-ratio: 7 / 10; object-fit: cover; border-radius: 6px; box-shadow: 0 10px 22px rgba(58, 36, 82, .22); }
+@media (max-width: 599px) { .content .covers { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; } }
+
+.book { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 28px; align-items: center; clear: both; margin: 36px 0; }
+.book__cover { display: block; width: 100%; height: auto; border-radius: 6px; filter: drop-shadow(0 12px 18px rgba(58, 36, 82, .22)); }
+.content .book h3 { margin-top: 0; }
+.content .book__text p:last-child { margin-bottom: 0; }
+@media (max-width: 599px) {
+  .book { grid-template-columns: 1fr; gap: 16px; }
+  .book__cover { max-width: 200px; }
+}
+
+.content .booklist { padding-left: 0; list-style: none; }
+.content .booklist li { position: relative; margin: 0; padding: 9px 0 9px 22px; border-bottom: 1px solid #f0e4f3; }
+.content .booklist li:last-child { border-bottom: 0; }
+.booklist li::before { content: ""; position: absolute; top: 1.05em; left: 4px; width: 7px; height: 7px; border-radius: 50%; background: var(--c-pink); }
+.booklist cite { color: var(--c-violet-900); font-style: normal; font-weight: 700; }
+.booklist a cite { color: inherit; }
+.badge {
+  display: inline-block;
+  margin-left: 4px;
+  padding: 1px 8px;
+  border-radius: 999px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-transform: uppercase;
+  vertical-align: 2px;
+  background: linear-gradient(100deg, #b8509c, #8a5fb0);
+}
+
+.content .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 24px 0; padding: 0; list-style: none; }
+.content .stats li { margin: 0; padding: 18px 6px; border-radius: 18px; color: #6b5a7d; font-size: 15px; line-height: 1.3; text-align: center; background: linear-gradient(140deg, #f6e6f3, #ece1f7); }
+.stats strong { display: block; color: var(--c-violet-900); font-size: clamp(22px, 3vw, 36px); line-height: 1.15; }
+
+.portrait { float: right; width: 230px; margin: 0 0 12px 28px; }
+.portrait img { display: block; width: 100%; height: auto; }
+@media (max-width: 599px) { .portrait { float: none; width: 200px; margin: 0 auto 16px; } }
+
+.reviews { display: grid; gap: 16px; margin: 20px 0; }
+@media (min-width: 700px) { .reviews { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.review { position: relative; margin: 0; padding: 50px 22px 20px; border: 1px solid #ead9f0; border-radius: 20px; background: #fff; box-shadow: 0 10px 30px rgba(79, 50, 122, .06); }
+.review::before { content: "«"; position: absolute; top: 8px; left: 20px; color: var(--c-pink); font-size: 44px; font-weight: 700; line-height: 1; }
+.review blockquote { margin: 0; }
+.content .review p { margin: 0; font-size: 16px; line-height: 1.55; }
+.review figcaption { margin-top: 12px; color: #6b5a7d; font-size: 14px; font-weight: 600; }
+
 /* Таблица тарифов: на узком экране прокручивается внутри своей рамки */
 .table-wrap { margin: 16px 0 20px; overflow-x: auto; border: 1px solid #ead9f0; border-radius: 16px; background: #fff; }
 .price-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 16px; }
