@@ -73,9 +73,13 @@
     setState('idle');
   };
 
+  // Видео на странице (js/video-arhiv.js) глушит радио, а радио при включении просит видео встать на паузу
+  window.__radioStop = () => { if (state !== 'idle') stop(); };
+
   const start = () => {
     // Каждый раз — свежий адрес: после паузы эфир продолжается с текущего момента, а не с буфера
     audio.src = `${STREAM}?t=${Date.now()}`;
+    dispatchEvent(new Event('radio:start'));
     setState('loading');
     audio.play().catch(() => setState('idle'));
     poll();
