@@ -28,16 +28,23 @@ body {
 
 .svg-defs { position: absolute; width: 0; height: 0; overflow: hidden; }
 
-/* ───────────── Hero: базовая (мобильная) версия ───────────── */
+/* ───────────── Главная: лотос ───────────── */
+/* Цветок один на всех экранах: девять подписанных лепестков вокруг медальона.
+   На телефоне он вписан в ширину экрана: касание лепестка показывает описание раздела в центре,
+   второе касание (или кнопка «Перейти») открывает раздел. На десктопе — псевдо-3D от движения мыши. */
 
 .hero {
-  --u: calc(100vw / 1100);
+  --u: min(100vw / 1200, .55px);
   --mx: 0;
   --my: 0;
   position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
   overflow: hidden;
   isolation: isolate;
-  padding-bottom: 28px;
+  padding-bottom: 36px;
   color: #fff;
   background: var(--bg-lotus);
 }
@@ -60,40 +67,61 @@ body {
 .pill-btn:focus-visible { border-color: #fff; background: rgba(255, 255, 255, .28); }
 .pill-btn[aria-current="page"] { color: var(--c-violet-900); background: #fff; }
 
-.hero__nav { position: relative; z-index: 3; display: flex; justify-content: space-between; padding: 14px 16px 0; }
+/* На телефоне вместо кнопок «О клубе» и «Контакты» — меню-бургер (см. «Мобильное меню») */
+.hero__nav {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 60px;
+  padding: 8px var(--gutter);
+  pointer-events: none;
+}
+.hero__links { display: none; }
+.hero__nav .pill-btn,
+.hero__nav .menu { pointer-events: auto; }
 
 .hero__decor { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
 .hero__decor--front { z-index: 2; }
-.hero__stage { position: relative; z-index: 1; }
 
-.lotus {
-  --cx: 50%;
-  --cy: calc(540 * var(--u));
+/* Сцена начинается от самого верха (шапка с бургером закреплена поверх неё) и забирает всю свободную высоту
+   экрана; цветок стоит посередине, но не выше, чем позволяет верхний лепесток (--top — центр цветка в самом верхнем положении) */
+.hero__stage {
+  --top: calc(12px + 662 * var(--u));
   position: relative;
-  padding-top: calc(1235 * var(--u));
+  z-index: 1;
+  flex: 1 0 auto;
+  min-height: calc(var(--top) + 800 * var(--u));
 }
 
-.lotus__back,
-.lotus__deco {
+.lotus {
   position: absolute;
-  left: var(--cx);
-  top: var(--cy);
+  left: 50%;
+  top: max(var(--top), 50% - 69 * var(--u));
+  width: 0;
+  height: 0;
+}
+
+.lotus__back {
+  position: absolute;
+  left: calc(-850 * var(--u));
+  top: calc(-850 * var(--u));
   width: calc(1700 * var(--u));
   height: calc(1700 * var(--u));
-  margin: calc(-850 * var(--u)) 0 0 calc(-850 * var(--u));
   overflow: visible;
   pointer-events: none;
 }
 
 .lotus__center {
   position: absolute;
-  left: var(--cx);
-  top: var(--cy);
+  left: calc(-330 * var(--u));
+  top: calc(-330 * var(--u));
+  z-index: 10;
   width: calc(660 * var(--u));
   height: calc(660 * var(--u));
-  margin: calc(-330 * var(--u)) 0 0 calc(-330 * var(--u));
   text-align: center;
-  /* Блок квадратный, а медальон круглый: углы не должны перехватывать мышь у лепестков */
+  /* Блок квадратный, а медальон круглый: углы не должны перехватывать касание у лепестков */
   pointer-events: none;
 }
 .center__hit { pointer-events: auto; }
@@ -114,6 +142,7 @@ body {
   width: calc(236 * var(--u));
   height: calc(236 * var(--u));
   margin-left: calc(-118 * var(--u));
+  transition: opacity .3s;
 }
 
 .center__title {
@@ -122,7 +151,7 @@ body {
   right: 0;
   top: calc(384 * var(--u));
   margin: 0;
-  font-size: calc(62 * var(--u));
+  font-size: max(17px, calc(62 * var(--u)));
   font-weight: 300;
   line-height: 1;
   text-shadow: 0 1px 10px rgba(80, 20, 90, .3);
@@ -130,44 +159,184 @@ body {
 }
 .center__title strong { display: block; margin-top: calc(6 * var(--u)); font-weight: 700; }
 
-.center__info { display: none; }
+/* Описание раздела в центре: на десктопе — при наведении, на телефоне — после касания лепестка */
+.center__info {
+  position: absolute;
+  left: 50%;
+  top: calc(372 * var(--u));
+  width: calc(440 * var(--u));
+  margin-left: calc(-220 * var(--u));
+  opacity: 0;
+  transform: translateY(calc(10 * var(--u)));
+  transition: opacity .3s, transform .3s;
+  pointer-events: none;
+}
+.center__info-name { margin: 0; font-size: max(15px, calc(38 * var(--u))); font-weight: 700; line-height: 1.05; }
+.center__info-desc { margin: calc(12 * var(--u)) 0 0; font-size: max(12px, calc(24 * var(--u))); line-height: 1.2; opacity: .92; }
+.center__go { display: none; }
+.lotus__center.is-info .center__title { opacity: 0; transform: translateY(calc(-10 * var(--u))); }
+.lotus__center.is-info .center__info { opacity: 1; transform: none; }
 
-/* На мобильном 9 разделов — обычный список-карточки под цветком */
+/* Выбранный касанием лепесток: логотип уступает место описанию и кнопке перехода */
+.lotus__center.is-picked .center__logo { opacity: 0; }
+.lotus__center.is-picked .center__info {
+  top: 50%;
+  width: calc(500 * var(--u));
+  margin-left: calc(-250 * var(--u));
+  transform: translateY(-50%);
+}
+.lotus__center.is-picked .center__go {
+  display: inline-block;
+  margin-top: max(8px, calc(18 * var(--u)));
+  padding: 5px 14px;
+  border: 1px solid rgba(255, 255, 255, .75);
+  border-radius: 999px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  background: rgba(79, 50, 122, .35);
+  pointer-events: auto;
+}
+
+/* Лепестки. Кликабельна только форма лепестка (.petal__hit), а не прямоугольник ссылки.
+   Порядок наложения при наведении не меняется, иначе соседние лепестки
+   начинают перехватывать курсор друг у друга. */
 .lotus__petals {
-  position: relative;
-  display: grid;
-  gap: 10px;
-  max-width: 520px;
-  margin: 0 auto;
-  padding: 0 16px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  margin: 0;
+  padding: 0;
   list-style: none;
 }
 
+.petal {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  height: 0;
+  z-index: var(--z);
+  transform: rotate(var(--r));
+  pointer-events: none;
+}
+/* Выбранный касанием или с клавиатуры лепесток выходит вперёд целиком (но остаётся под медальоном) */
+.petal:has(:focus-visible),
+.petal:has(.is-picked) { z-index: 9; }
+
 .petal__link {
-  display: block;
-  padding: 12px 20px;
-  border: 1px solid rgba(247, 205, 185, .8);
-  border-radius: 999px;
+  position: absolute;
+  left: calc(-230 * var(--u));
+  top: calc(-700 * var(--u));
+  width: calc(460 * var(--u));
+  height: calc(700 * var(--u));
   color: #fff;
   text-decoration: none;
-  background: linear-gradient(100deg, rgba(190, 86, 160, .92), rgba(224, 150, 196, .8));
-  box-shadow: 0 6px 18px rgba(60, 20, 90, .22);
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
-.petal__shape,
-.petal__hitbox { display: none; }
-.petal__label { display: flex; align-items: baseline; gap: 10px; }
-.petal__num { min-width: 1.5em; font-size: 22px; font-weight: 500; }
-.petal__name { font-size: 17px; font-weight: 600; }
-.petal__name br { display: none; }
+
+/* Зона касания неподвижна: она не увеличивается и не качается вместе с лепестком */
+.petal__hitbox {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+.petal__hit { fill: transparent; pointer-events: all; cursor: pointer; }
+
+.petal__move {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform-origin: 50% 100%;
+  /* --tw и --ty каждый кадр выставляет lotus.js (только на десктопе) */
+  transform: rotate(var(--tw, 0deg)) translateY(calc(var(--ty, 0) * var(--u)));
+}
+
+.petal__body {
+  position: absolute;
+  inset: 0;
+  display: block;
+  transform-origin: 50% 100%;
+  transition: transform .45s cubic-bezier(.2, .8, .2, 1);
+}
+
+.petal__shape {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  filter: drop-shadow(0 0 calc(12 * var(--u)) rgba(70, 20, 100, .38));
+  transition: filter .35s;
+}
+.petal__vein { fill: none; stroke: #fff; stroke-width: 2; opacity: .13; }
+
+.petal__label {
+  position: absolute;
+  left: 50%;
+  top: calc(262 * var(--u));
+  display: block;
+  width: calc(360 * var(--u));
+  text-align: center;
+  line-height: 1;
+  text-shadow: 0 1px 8px rgba(80, 20, 90, .45);
+  transform: translate(-50%, -50%) rotate(calc(var(--r) * -1));
+}
+.petal__num { display: block; font-size: max(18px, calc(62 * var(--u))); font-weight: 500; }
+.petal__name { display: block; margin-top: calc(2 * var(--u)); font-size: max(12px, calc(33 * var(--u))); font-weight: 600; line-height: 1.04; }
+
+.petal__link:focus-visible .petal__body,
+.petal__link.is-picked .petal__body { transform: scale(1.08); }
+.petal__link:focus-visible .petal__shape,
+.petal__link.is-picked .petal__shape {
+  filter: drop-shadow(0 0 calc(26 * var(--u)) rgba(255, 205, 235, .9)) brightness(1.1) saturate(1.12);
+}
+.petal__link:focus-visible .petal__rim,
+.petal__link.is-picked .petal__rim { stroke: #fff; stroke-width: 7; }
+.lotus__petals:has(.is-picked) .petal__link:not(.is-picked) .petal__shape {
+  filter: drop-shadow(0 0 calc(12 * var(--u)) rgba(70, 20, 100, .38)) brightness(.9) saturate(.85);
+}
+
+/* Наведение — только там, где есть мышь: на телефоне «залипшее» после касания увеличение сбивает с толку */
+@media (hover: hover) {
+  .petal__link:hover .petal__body { transform: scale(1.06); }
+  .petal__link:hover .petal__shape {
+    filter: drop-shadow(0 0 calc(26 * var(--u)) rgba(255, 205, 235, .9)) brightness(1.1) saturate(1.12);
+  }
+  .lotus__petals:has(.petal__link:hover) .petal__link:not(:hover) .petal__shape {
+    filter: drop-shadow(0 0 calc(12 * var(--u)) rgba(70, 20, 100, .38)) brightness(.95) saturate(.9);
+  }
+}
+
+/* Подсказка для сенсорных экранов: без неё не догадаться, что первое касание лепестка его только выбирает */
+.hero__hint {
+  position: relative;
+  z-index: 3;
+  display: none;
+  margin: 0 20px 20px;
+  font-size: 14px;
+  font-style: italic;
+  text-align: center;
+  opacity: .8;
+}
+@media (hover: none) and (max-width: 899px) { .hero__hint { display: block; } }
 
 .hero__aside {
   position: relative;
   z-index: 3;
   display: grid;
   gap: 22px;
+  width: 100%;
   max-width: 520px;
-  margin: 28px auto 0;
-  padding: 0 20px;
+  margin: 0 auto;
+  padding: 8px 20px 0;
   pointer-events: none;
 }
 .resources__list a { pointer-events: auto; }
@@ -186,6 +355,16 @@ body {
 }
 .resources__list a:hover,
 .resources__list a:focus-visible { background: rgba(255, 255, 255, .2); }
+
+/* На телефоне ресурсы и цитата стоят по центру под цветком. Чипы одной ширины, по три в ряд:
+   пять ресурсов ложатся ровно 3 + 2, а не 4 + 1. То же в мобильном меню */
+.hero__aside { text-align: center; }
+.hero__aside .resources__list,
+.menu .resources__list { justify-content: center; max-width: 360px; margin: 0 auto; }
+.hero__aside .resources__list li,
+.menu .resources__list li { flex: 0 0 calc((100% - 16px) / 3); }
+.hero__aside .resources__list a,
+.menu .resources__list a { text-align: center; }
 
 .hero__quote { margin: 0; font-size: 19px; font-style: italic; font-weight: 300; line-height: 1.2; }
 .hero__quote::before { content: "„"; margin-right: .15em; font-weight: 700; }
@@ -209,12 +388,13 @@ body {
   transform: rotate(var(--rot, 0deg));
 }
 
-/* ───────────── Hero: десктоп — радиальный лотос с псевдо-3D ───────────── */
+/* ───────────── Главная: десктоп — один экран, цветок наклоняется к курсору ───────────── */
 
 @media (min-width: 900px) {
-  /* Главная на десктопе — ровно один экран без прокрутки: сцена сжимается вместе с окном */
+  /* Главная на десктопе — ровно один экран: сцена сжимается вместе с окном */
   .hero {
     --u: min(100vw / 1920, 100vh / 1080);
+    display: block;
     height: 100vh;
     padding: 0;
   }
@@ -231,31 +411,25 @@ body {
     left: 0;
     right: 0;
     padding: calc(36 * var(--u)) calc(44 * var(--u));
-    pointer-events: none;
   }
-  .hero__nav .pill-btn {
+  .hero__links { display: flex; flex: 1; justify-content: space-between; }
+  .hero__links .pill-btn {
     padding: max(8px, calc(14 * var(--u))) max(18px, calc(36 * var(--u)));
     font-size: max(14px, calc(26 * var(--u)));
-    pointer-events: auto;
   }
 
   .hero__stage {
     position: absolute;
     inset: 0;
+    min-height: 0;
+    margin: 0;
     perspective: calc(1500 * var(--u));
     perspective-origin: 50% 51.5%;
   }
 
   /* Весь цветок наклоняется «лицом» к курсору; слои разнесены по глубине */
   .lotus {
-    --cx: 0px;
-    --cy: 0px;
-    position: absolute;
-    left: 50%;
     top: 51.5%;
-    width: 0;
-    height: 0;
-    padding: 0;
     transform-style: preserve-3d;
     transform:
       translate3d(calc(var(--mx) * 14 * var(--u)), calc(var(--my) * 10 * var(--u)), 0)
@@ -263,140 +437,16 @@ body {
       rotateY(calc(var(--mx) * 6deg));
     will-change: transform;
   }
-
-  .lotus__deco { display: none; }
   .lotus__back { transform: translateZ(calc(-140 * var(--u))) scale(1.093); }
   .lotus__center { transform: translateZ(calc(110 * var(--u))) scale(.927); }
+  .lotus__petals { transform: translateZ(0); }
 
-  .lotus__petals {
-    position: absolute;
-    left: 0;
-    top: 0;
-    display: block;
-    width: 0;
-    height: 0;
-    max-width: none;
-    margin: 0;
-    padding: 0;
-    transform: translateZ(0);
-  }
+  .petal__label { width: calc(330 * var(--u)); text-shadow: 0 1px 8px rgba(80, 20, 90, .35); }
+  .petal__name { line-height: 1.02; }
 
-  /* Кликабельна только форма лепестка (.petal__hit), а не прямоугольник ссылки.
-     Порядок наложения при наведении не меняется, иначе соседние лепестки
-     начинают перехватывать курсор друг у друга. */
-  .petal {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: 0;
-    height: 0;
-    z-index: var(--z);
-    transform: rotate(var(--r));
-    pointer-events: none;
-  }
-  .petal:has(:focus-visible) { z-index: 20; }
-
-  .petal__link {
-    position: absolute;
-    left: calc(-230 * var(--u));
-    top: calc(-700 * var(--u));
-    width: calc(460 * var(--u));
-    height: calc(700 * var(--u));
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: none;
-    box-shadow: none;
-    outline: none;
-  }
-
-  /* Зона наведения неподвижна: она не увеличивается и не качается вместе с лепестком */
-  .petal__hitbox {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-  }
-  .petal__hit { fill: transparent; pointer-events: all; cursor: pointer; }
-
-  .petal__move {
-    position: absolute;
-    inset: 0;
-    display: block;
-    transform-origin: 50% 100%;
-    /* --tw и --ty каждый кадр выставляет lotus.js */
-    transform: rotate(var(--tw, 0deg)) translateY(calc(var(--ty, 0) * var(--u)));
-  }
-
-  .petal__body {
-    position: absolute;
-    inset: 0;
-    display: block;
-    transform-origin: 50% 100%;
-    transition: transform .45s cubic-bezier(.2, .8, .2, 1);
-  }
-
-  .petal__shape {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-    overflow: visible;
-    filter: drop-shadow(0 0 calc(12 * var(--u)) rgba(70, 20, 100, .38));
-    transition: filter .35s;
-  }
-  .petal__vein { fill: none; stroke: #fff; stroke-width: 2; opacity: .13; }
-
-  .petal__label {
-    position: absolute;
-    left: 50%;
-    top: calc(262 * var(--u));
-    display: block;
-    width: calc(330 * var(--u));
-    text-align: center;
-    line-height: 1;
-    text-shadow: 0 1px 8px rgba(80, 20, 90, .35);
-    transform: translate(-50%, -50%) rotate(calc(var(--r) * -1));
-  }
-  .petal__num { display: block; min-width: 0; font-size: calc(62 * var(--u)); }
-  .petal__name { display: block; margin-top: calc(2 * var(--u)); font-size: calc(33 * var(--u)); line-height: 1.02; }
-  .petal__name br { display: inline; }
-
-  .petal__link:hover .petal__body,
-  .petal__link:focus-visible .petal__body { transform: scale(1.06); }
-
-  .petal__link:hover .petal__shape,
-  .petal__link:focus-visible .petal__shape {
-    filter: drop-shadow(0 0 calc(26 * var(--u)) rgba(255, 205, 235, .9)) brightness(1.1) saturate(1.12);
-  }
-  .petal__link:focus-visible .petal__rim { stroke: #fff; stroke-width: 7; }
-
-  .lotus__petals:has(.petal__link:hover) .petal__link:not(:hover) .petal__shape {
-    filter: drop-shadow(0 0 calc(12 * var(--u)) rgba(70, 20, 100, .38)) brightness(.95) saturate(.9);
-  }
-
-  /* В центре при наведении на лепесток появляется описание раздела */
-  .center__info {
-    position: absolute;
-    left: 50%;
-    top: calc(372 * var(--u));
-    display: block;
-    width: calc(440 * var(--u));
-    margin-left: calc(-220 * var(--u));
-    opacity: 0;
-    transform: translateY(calc(10 * var(--u)));
-    transition: opacity .3s, transform .3s;
-    pointer-events: none;
-  }
-  .center__info-name { margin: 0; font-size: calc(38 * var(--u)); font-weight: 700; line-height: 1.05; }
-  .center__info-desc { margin: calc(12 * var(--u)) 0 0; font-size: calc(24 * var(--u)); line-height: 1.2; opacity: .92; }
-  .lotus__center.is-info .center__title { opacity: 0; transform: translateY(calc(-10 * var(--u))); }
-  .lotus__center.is-info .center__info { opacity: 1; transform: none; }
-
-  .hero__aside { position: static; display: block; max-width: none; margin: 0; padding: 0; }
+  .hero__aside { position: static; display: block; max-width: none; margin: 0; padding: 0; text-align: left; }
+  .hero__aside .resources__list { justify-content: flex-start; max-width: none; }
+  .hero__aside .resources__list li { flex: none; }
   .hero__resources {
     position: absolute;
     z-index: 3;
@@ -419,10 +469,12 @@ body {
 
 @media (prefers-reduced-motion: no-preference) {
   .float svg { animation: drift var(--t, 14s) ease-in-out infinite alternate; }
+  .petal__body { animation: bloom .9s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--i) * 70ms + 150ms); }
+  .lotus__back { animation: fade 1.4s ease-out backwards; }
 
-  @media (min-width: 900px) {
-    .petal__body { animation: bloom .9s cubic-bezier(.2, .8, .2, 1) backwards; animation-delay: calc(var(--i) * 70ms + 150ms); }
-    .lotus__back { animation: fade 1.4s ease-out backwards; }
+  /* Без мыши цветок не следит за курсором — вместо этого лепестки медленно «дышат» */
+  @media (hover: none) {
+    .petal__move { animation: breathe 4.5s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -1.1s); }
   }
 }
 
@@ -432,6 +484,10 @@ body {
 }
 @keyframes bloom { from { opacity: 0; transform: scale(.55); } }
 @keyframes fade { from { opacity: 0; } }
+@keyframes breathe {
+  from { transform: rotate(-.6deg) translateY(0); }
+  to { transform: rotate(.6deg) translateY(calc(-8 * var(--u))); }
+}
 
 /* ───────────── Внутренние страницы: сетка ───────────── */
 /* Рассчитано на обычные десктопы: контейнер до 1280 px — основная колонка (~830 px) и боковая (320 px).
@@ -499,7 +555,7 @@ body {
   border-radius: 18px;
   background: linear-gradient(120deg, #f6e6f3, #efe3f7);
 }
-.cta__note { margin: 0; font-size: 16px; }
+.content .cta__note { margin: 0; font-size: 16px; }
 
 /* Боковая колонка с карточками */
 .aside { display: grid; gap: 16px; margin-top: 48px; }
@@ -722,9 +778,9 @@ body {
 .reviews { display: grid; gap: 16px; margin: 20px 0; }
 @media (min-width: 700px) { .reviews { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 .review { position: relative; margin: 0; padding: 50px 22px 20px; border: 1px solid #ead9f0; border-radius: 20px; background: #fff; box-shadow: 0 10px 30px rgba(79, 50, 122, .06); }
-.review::before { content: "«"; position: absolute; top: 8px; left: 20px; color: var(--c-pink); font-size: 44px; font-weight: 700; line-height: 1; }
+.review::before { content: "“"; position: absolute; top: 10px; left: 20px; color: var(--c-pink); font-family: Georgia, "Times New Roman", serif; font-size: 64px; font-weight: 700; line-height: 1; }
 .review blockquote { margin: 0; }
-.content .review p { margin: 0; font-size: 16px; line-height: 1.55; }
+.content .review p { margin: 0; font-size: 16px; font-style: italic; line-height: 1.55; }
 .review figcaption { margin-top: 12px; color: #6b5a7d; font-size: 14px; font-weight: 600; }
 
 /* Карта библиотечной программы: контур — картинка, книжки — метки в процентах поверх неё.
@@ -810,59 +866,141 @@ body {
     linear-gradient(165deg, #2a1c44 0%, #4f327a 55%, #8a5fb0 100%);
   box-shadow: 0 16px 36px rgba(58, 36, 82, .3);
 }
-.content .radio-hero__slogan { max-width: 640px; margin: 0 auto 22px; font-size: clamp(21px, 2.8vw, 30px); font-weight: 700; letter-spacing: .03em; line-height: 1.25; }
-/* .content p задаёт абзацам margin-top: 0 — поэтому селектор с .content */
-.content .radio-now { margin: 22px 0 0; color: #f4d9ee; font-size: 14px; line-height: 1.5; }
-.radio-now span { color: #fff; font-weight: 600; }
 
-.radio-play {
-  display: inline-flex;
+/* Первый блок: слева крупная кнопка-медальон, справа слоган и «Сейчас в эфире».
+   Подпись «Слушать» висит под медальоном и не входит в высоту кнопки — поэтому текст встаёт ровно
+   по центру медальона, а нижний отступ блока больше верхнего ровно на эту подпись. */
+.radio-hero {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 22px 40px;
   align-items: center;
-  gap: 12px;
-  padding: 8px 26px 8px 8px;
+  padding: 40px 44px 72px;
+  text-align: left;
+  background:
+    radial-gradient(60% 90% at 14% 40%, rgba(227, 162, 199, .35), transparent 70%),
+    radial-gradient(120% 80% at 50% 0%, rgba(255, 255, 255, .14), transparent 60%),
+    linear-gradient(165deg, #2a1c44 0%, #4f327a 55%, #8a5fb0 100%);
+}
+.content .radio-hero__kicker { margin: 0 0 12px; color: #f6c3dc; font-size: 13px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; }
+.radio-hero__kicker span { white-space: nowrap; }
+.content .radio-hero__slogan { margin: 0; font-size: clamp(22px, 2.6vw, 30px); font-weight: 800; letter-spacing: .03em; line-height: 1.22; }
+/* .content p задаёт абзацам свои отступы — поэтому селектор с .content */
+.content .radio-now { margin: 18px 0 0; color: #f4d9ee; font-size: 14px; line-height: 1.5; }
+.radio-now span { color: #fff; font-weight: 600; }
+@media (max-width: 599px) {
+  .radio-hero { grid-template-columns: 1fr; justify-items: center; padding: 32px 22px 36px; text-align: center; }
+}
+
+/* Кнопка-медальон. Сам медальон — отдельный слой (::before): в эфире он вращается, а значок внутри стоит ровно */
+.radio-big {
+  --d: 150px;
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  padding: 0;
   border: 0;
-  border-radius: 999px;
   color: #fff;
   font: inherit;
-  font-size: 18px;
-  font-weight: 700;
-  background: linear-gradient(100deg, #d0599f, #8a5fb0);
-  box-shadow: 0 8px 22px rgba(184, 80, 156, .45);
+  background: none;
   cursor: pointer;
-  transition: filter .2s, transform .2s;
+  -webkit-tap-highlight-color: transparent;
 }
-.radio-play:hover,
-.radio-play:focus-visible { filter: brightness(1.1); }
-.radio-play:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
-.radio-play__icon { position: relative; flex: none; width: 42px; height: 42px; border-radius: 50%; background: #fff; }
-.radio-play__icon::before {
-  content: "";
-  position: absolute;
+.radio-big:focus-visible { outline: none; }
+.radio-big__disc {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: var(--d);
+  height: var(--d);
+  border-radius: 50%;
+  filter: drop-shadow(0 14px 26px rgba(20, 8, 40, .5));
+  transition: transform .25s cubic-bezier(.2, .8, .2, 1);
+}
+.radio-big__disc::before,
+.radio-big__disc::after { content: ""; position: absolute; }
+.radio-big__disc::before {
   inset: 0;
-  width: 14px;
-  height: 16px;
-  margin: auto;
-  transform: translateX(2px);
-  background: var(--c-violet-900);
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  background: linear-gradient(145deg, #fff 0%, #fbe3f1 45%, #e9b0d2 100%);
+  -webkit-mask: var(--medal) center / contain no-repeat;
+  mask: var(--medal) center / contain no-repeat;
 }
-.radio-play.is-playing .radio-play__icon::before,
-.radio-play.is-loading .radio-play__icon::before {
-  transform: none;
-  clip-path: none;
-  background: linear-gradient(90deg, var(--c-violet-900) 0 35%, transparent 35% 65%, var(--c-violet-900) 65%);
+/* тонкое внутреннее кольцо, как у медальона в центре лотоса */
+.radio-big__disc::after { inset: 15%; border: 2px solid rgba(165, 70, 140, .22); border-radius: 50%; }
+.radio-big:hover .radio-big__disc { transform: scale(1.05); }
+.radio-big:active .radio-big__disc { transform: scale(.97); }
+.radio-big:focus-visible .radio-big__disc { outline: 3px solid #fff; outline-offset: 8px; }
+
+.radio-big__play,
+.radio-big__pause,
+.radio-big__eq { position: relative; z-index: 1; }
+.radio-big__play {
+  width: 0;
+  height: 0;
+  margin-left: 10px;
+  border-top: 24px solid transparent;
+  border-bottom: 24px solid transparent;
+  border-left: 38px solid #8a4f9e;
 }
-.radio-eq { display: none; align-items: flex-end; gap: 3px; height: 18px; }
-.radio-eq i { width: 3px; height: 100%; border-radius: 2px; background: #fff; transform-origin: bottom; }
-.radio-play.is-playing .radio-eq { display: inline-flex; }
+.radio-big__pause {
+  display: none;
+  width: 34px;
+  height: 44px;
+  background: linear-gradient(90deg, #8a4f9e 0 34%, transparent 34% 66%, #8a4f9e 66%);
+  border-radius: 4px;
+}
+.radio-big__eq { display: none; gap: 5px; align-items: center; height: 52px; }
+.radio-big__eq i { width: 6px; height: 100%; border-radius: 3px; background: linear-gradient(#c0559e, #6f4c97); transform: scaleY(.3); }
+.radio-big.is-playing .radio-big__play,
+.radio-big.is-loading .radio-big__play { display: none; }
+.radio-big.is-playing .radio-big__eq,
+.radio-big.is-loading .radio-big__eq { display: flex; }
+@media (hover: hover) {
+  .radio-big.is-playing:hover .radio-big__eq { display: none; }
+  .radio-big.is-playing:hover .radio-big__pause { display: block; }
+}
+.radio-big__label { font-size: 15px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; white-space: nowrap; }
+@media (min-width: 600px) {
+  .radio-big__label { position: absolute; top: calc(var(--d) + 14px); left: 50%; transform: translateX(-50%); }
+}
+
+/* Радиоволны вокруг медальона */
+.radio-big__waves { position: absolute; left: 0; top: 0; width: var(--d); height: var(--d); pointer-events: none; }
+.radio-big__waves i { position: absolute; inset: 4%; border: 2px solid rgba(255, 214, 236, .6); border-radius: 50%; opacity: 0; }
+
+@media (max-width: 599px) { .radio-big { --d: 128px; } }
+
 @media (prefers-reduced-motion: no-preference) {
-  .radio-play.is-loading .radio-play__icon { animation: radio-pulse 1s ease-in-out infinite; }
-  .radio-play.is-playing .radio-eq i { animation: radio-eq .9s ease-in-out infinite alternate; }
-  .radio-eq i:nth-child(2) { animation-delay: -.3s; }
-  .radio-eq i:nth-child(3) { animation-delay: -.6s; }
-  .radio-eq i:nth-child(4) { animation-delay: -.15s; }
+  /* В покое кнопка мягко «зовёт»: одна волна раз в несколько секунд */
+  .radio-big:not(.is-playing):not(.is-loading) .radio-big__waves i:first-child { animation: radio-invite 2.8s ease-out infinite; }
+  .radio-big.is-loading .radio-big__disc { animation: radio-pulse 1s ease-in-out infinite; }
+  /* В эфире медальон медленно вращается, волны расходятся одна за другой, эквалайзер «танцует» */
+  .radio-big.is-playing .radio-big__disc::before { animation: radio-spin 24s linear infinite; }
+  .radio-big.is-playing .radio-big__waves i { animation: radio-wave 2.7s ease-out infinite; }
+  .radio-big.is-playing .radio-big__waves i:nth-child(2) { animation-delay: .9s; }
+  .radio-big.is-playing .radio-big__waves i:nth-child(3) { animation-delay: 1.8s; }
+  .radio-big__eq i { animation: radio-dance 1.1s ease-in-out infinite; }
+  .radio-big__eq i:nth-child(1) { animation-duration: 1.05s; animation-delay: -.2s; }
+  .radio-big__eq i:nth-child(2) { animation-duration: .85s; animation-delay: -.55s; }
+  .radio-big__eq i:nth-child(3) { animation-duration: 1.25s; animation-delay: -.1s; }
+  .radio-big__eq i:nth-child(4) { animation-duration: .75s; animation-delay: -.7s; }
+  .radio-big__eq i:nth-child(5) { animation-duration: 1.15s; animation-delay: -.4s; }
+  .radio-big__eq i:nth-child(6) { animation-duration: .95s; animation-delay: -.85s; }
+  .radio-big__eq i:nth-child(7) { animation-duration: 1.35s; animation-delay: -.3s; }
+  .radio-big.is-loading .radio-big__eq i { animation-duration: .45s; }
 }
-@keyframes radio-pulse { 50% { transform: scale(.85); opacity: .7; } }
+@keyframes radio-pulse { 50% { transform: scale(.92); opacity: .8; } }
+@keyframes radio-spin { to { transform: rotate(360deg); } }
+@keyframes radio-invite { 0% { opacity: .7; transform: scale(1); } 100% { opacity: 0; transform: scale(1.45); } }
+@keyframes radio-wave { 0% { opacity: .8; transform: scale(1); } 100% { opacity: 0; transform: scale(1.85); } }
+@keyframes radio-dance {
+  0%, 100% { transform: scaleY(.28); }
+  20% { transform: scaleY(.9); }
+  40% { transform: scaleY(.45); }
+  60% { transform: scaleY(1); }
+  80% { transform: scaleY(.6); }
+}
 @keyframes radio-eq { from { transform: scaleY(.25); } to { transform: scaleY(1); } }
 
 .radio-intro { display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 28px; align-items: center; margin: 32px 0 8px; }
@@ -878,13 +1016,9 @@ body {
 .content .radio-list li { position: relative; margin-bottom: .45em; padding-left: 26px; }
 .radio-list li::before { content: "–"; position: absolute; left: 4px; color: var(--c-pink); font-weight: 700; }
 
+.price-table.radio-schedule { min-width: 0; }
 .radio-schedule th { width: 96px; font-variant-numeric: tabular-nums; }
 
-.content .radio-topics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; margin: 20px 0; padding: 0; list-style: none; }
-@media (max-width: 599px) { .content .radio-topics { grid-template-columns: 1fr; } }
-.content .radio-topics li { margin: 0; padding: 18px 20px; border: 1px solid #ead9f0; border-radius: 18px; background: #fff; }
-.content .radio-topics h3 { margin: 0 0 6px; }
-.content .radio-topics p { margin: 0; font-size: 16px; line-height: 1.5; }
 
 .radio-final { margin-top: 40px; }
 .content .radio-final__text { max-width: 600px; margin: 0 auto 20px; font-size: clamp(20px, 2.4vw, 26px); font-weight: 700; line-height: 1.3; }
@@ -904,7 +1038,7 @@ body {
 .content .radio-channel:focus-visible { background: rgba(255, 255, 255, .16); }
 
 /* Карточка радио в боковой колонке */
-.radio-card .radio-play { margin: 4px 0 16px; }
+.radio-card .btn { margin: 0 0 14px; }
 .radio-channels--card { justify-content: flex-start; margin: 0 0 14px; gap: 8px; }
 .card .radio-channels--card .radio-channel { padding: 7px 14px; border-color: var(--c-violet-500); color: var(--c-violet-700); font-size: 14px; }
 .card .radio-channels--card .radio-channel:hover,
@@ -913,13 +1047,13 @@ body {
 /* Йога разума: карточки мужской и женской групп */
 .groups { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; margin: 16px 0 8px; }
 @media (max-width: 599px) { .groups { grid-template-columns: 1fr; } }
-.group-card { padding: 20px 22px; border: 1px solid #ead9f0; border-radius: 18px; background: #fff; box-shadow: 0 10px 30px rgba(79, 50, 122, .06); }
-.content .group-card h3 { margin: 0 0 4px; }
-.content .group-card__admin { margin: 0 0 10px; color: #6b5a7d; font-size: 16px; }
-.content .group-card__contacts { margin: 0 0 12px; padding-left: 0; font-size: 16px; list-style: none; }
-.content .group-card__contacts li { margin-bottom: 4px; }
-.content .group-card p:last-child { margin: 0; font-size: 16px; }
-.group-card__video::before { content: "▶"; margin-right: 6px; font-size: 12px; }
+.group-card { padding: 22px; border: 1px solid #ead9f0; border-radius: 20px; background: #fff; box-shadow: 0 10px 30px rgba(79, 50, 122, .06); }
+.group-card__head { display: flex; gap: 14px; align-items: center; margin-bottom: 16px; }
+.content .group-card h3 { margin: 0 0 2px; }
+.content .group-card__admin { margin: 0; color: #6b5a7d; font-size: 15px; }
+/* Контакты — кнопками с иконками вместо строки подчёркнутых ссылок */
+.content .group-card__actions { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.content .group-card__actions li { margin: 0; }
 
 /* Благодарственные письма: превью открывают письмо целиком */
 .letters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; margin: 20px 0 28px; }
@@ -939,14 +1073,39 @@ body {
 .video iframe { display: block; width: 100%; height: 100%; border: 0; }
 
 /* Таблица тарифов: на узком экране прокручивается внутри своей рамки */
-.table-wrap { margin: 16px 0 20px; overflow-x: auto; border: 1px solid #ead9f0; border-radius: 16px; background: #fff; }
-.price-table { width: 100%; min-width: 520px; border-collapse: collapse; font-size: 16px; }
+.table-wrap { margin: 16px 0 20px; overflow-x: auto; }
+.price-table {
+  width: 100%;
+  min-width: 520px;
+  overflow: hidden;
+  border: 1px solid #ead9f0;
+  border-radius: 16px;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 16px;
+  background: #fff;
+}
 .price-table th,
 .price-table td { padding: 12px 16px; border-bottom: 1px solid #f0e4f3; text-align: left; }
 .price-table thead th { color: #7b6890; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; background: #faf3fb; }
 .price-table tbody th { color: var(--c-violet-900); }
 .price-table tbody tr:last-child th,
 .price-table tbody tr:last-child td { border-bottom: 0; }
+/* На телефоне широкая таблица прокручивается на всю ширину экрана, без рамки-контейнера:
+   в начале её левый край стоит по тексту, а правая часть уходит за край экрана;
+   в конце прокрутки правый край встаёт на тот же отступ от края. Таблица, которая помещается,
+   просто тянется на ширину текста. */
+@media (max-width: 899px) {
+  .table-wrap {
+    display: flex;
+    margin-inline: calc(-1 * var(--gutter));
+    padding-left: var(--gutter);
+    scrollbar-width: none;
+  }
+  .table-wrap::-webkit-scrollbar { display: none; }
+  .table-wrap::after { content: ""; flex: none; width: var(--gutter); }
+  .table-wrap > table { flex: 1 0 auto; width: auto; }
+}
 
 .contacts { display: grid; grid-template-columns: max-content 1fr; gap: 10px 20px; margin: 0; }
 .contacts dt { font-weight: 700; color: var(--c-violet-900); }
@@ -988,7 +1147,8 @@ body {
   position: relative;
 }
 .wheel {
-  --rot: calc(var(--dir) - var(--cur, 0) * 40deg + var(--spin, 0) * 40deg);
+  /* --drag — поворот вслед за пальцем во время свайпа (js/wheel.js) */
+  --rot: calc(var(--dir) - var(--cur, 0) * 40deg + var(--spin, 0) * 40deg + var(--drag, 0deg));
   position: relative;
   height: calc(1040 * var(--u));
 }
@@ -1093,7 +1253,11 @@ body {
   height: calc(660 * var(--u));
   margin: calc(-330 * var(--u)) 0 0 calc(-330 * var(--u));
   border-radius: 50%;
+  /* Нажимается только сам медальон (.wheel__hit — его контур), а не квадрат вокруг:
+     иначе касание лепестка рядом с центром уводило на главную */
+  pointer-events: none;
 }
+.wheel__hit { pointer-events: auto; cursor: pointer; }
 .wheel__plate {
   position: absolute;
   inset: 0;
@@ -1116,38 +1280,15 @@ body {
 .wheel__center:focus-visible .wheel__logo { transform: translate(-50%, -50%) scale(1.06); }
 .wheel__center:focus-visible { outline: 3px solid #fff; outline-offset: 4px; }
 
-.wheel__spin {
-  position: absolute;
-  z-index: 3;
-  display: grid;
-  place-items: center;
-  width: 44px;
-  height: 44px;
-  padding: 0;
-  border: 1px solid rgba(255, 255, 255, .6);
-  border-radius: 50%;
-  color: #fff;
-  text-decoration: none;
-  background: rgba(79, 50, 122, .55);
-  cursor: pointer;
-  transition: background .2s;
-}
-.wheel__spin:hover,
-.wheel__spin:focus-visible { background: rgba(255, 255, 255, .28); }
-.wheel__spin svg { width: 22px; height: 22px; }
-/* На телефоне текущий лепесток смотрит вниз: «следующие» — слева, «предыдущие» — справа */
-.wheel__spin--next { left: 10px; top: calc(var(--cy) + 520 * var(--u)); }
-.wheel__spin--prev { right: 10px; top: calc(var(--cy) + 520 * var(--u)); }
-.wheel__spin--prev svg { transform: rotate(180deg); }
-
 /* На телефоне центр цветка поднят выше шапки: от медальона виден только нижний край,
    торчат три лепестка — текущий по центру и два соседних. Шапка обрезает цветок по своим краям,
    чтобы он не просвечивал сквозь полупрозрачную верхнюю панель. */
 @media (max-width: 899px) {
   .top__hero { --cy: calc(-185 * var(--u)); overflow: hidden; }
-  .wheel { height: calc(540 * var(--u)); }
-  .wheel__spin--next,
-  .wheel__spin--prev { top: calc(var(--cy) + 560 * var(--u)); }
+  /* Цветок крутится свайпом по горизонтали; вертикальная прокрутка страницы остаётся браузеру */
+  .wheel { height: calc(540 * var(--u)); touch-action: pan-y; }
+  /* Торчащий край медальона на главную не ведёт: в него легко попасть, целясь в лепесток */
+  .wheel__hit { pointer-events: none; }
 }
 
 .top__inner { position: relative; z-index: 2; }
@@ -1166,12 +1307,6 @@ body {
     height: calc(720 * var(--u));
   }
   .wheel { position: absolute; inset: 0; height: auto; }
-  .wheel__spin--next,
-  .wheel__spin--prev { left: calc(var(--cx) - 22px); right: auto; }
-  .wheel__spin--next { top: 14px; }
-  .wheel__spin--prev { top: auto; bottom: 14px; }
-  .wheel__spin--next svg { transform: rotate(90deg); }
-  .wheel__spin--prev svg { transform: rotate(270deg); }
 
   .top__inner {
     display: flex;
@@ -1190,9 +1325,33 @@ body {
   }
 }
 
+/* Фоновое фото раздела (tools/make_header_photos.py) уже окрашено в фиолетовую гамму;
+   здесь — полупрозрачность и растворение в сторону лотоса: на телефоне вверх, к лепесткам,
+   на десктопе вправо, к цветку. Лежит под цветком и заголовком. */
+.top__photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: .5;
+  pointer-events: none;
+  -webkit-mask-image: linear-gradient(to top, #000 25%, transparent 90%);
+  mask-image: linear-gradient(to top, #000 25%, transparent 90%);
+}
+@media (min-width: 900px) {
+  .top__photo {
+    width: calc(100% - 1000 * var(--u));
+    -webkit-mask-image: linear-gradient(to right, #000 35%, transparent);
+    mask-image: linear-gradient(to right, #000 35%, transparent);
+  }
+}
+
 /* Возврат «Назад» из кэша: цветок встаёт на место мгновенно */
 .wheel.is-instant .wheel__disc,
-.wheel.is-instant .wpetal__label { transition: none; }
+.wheel.is-instant .wpetal__label,
+.wheel.is-dragging .wheel__disc,
+.wheel.is-dragging .wpetal__label { transition: none; }
 
 /* Переход между страницами разделов: цветок уже повёрнут к нужному лепестку, поэтому шапка
    до и после перехода совпадает и при общем затухании стоит на месте, а заголовок и текст
@@ -1208,3 +1367,537 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .petal__body, .wpetal__body, .wheel__disc, .wpetal__label, .center__title, .center__info { transition: none; }
 }
+
+/* ───────────── Мобильное меню ───────────── */
+/* Бургер на экранах уже 900 px: девять направлений отдельным списком, ниже — «О клубе» и «Контакты»,
+   в самом низу — наши ресурсы. Сделано на <details>: открывается и закрывается без JS,
+   site.js добавляет закрытие по Esc. На десктопе вместо бургера — кнопки «О клубе» и «Контакты». */
+
+.menu { --num: 34px; flex: none; }
+.menu__btn {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 50%;
+  color: #fff;
+  background: rgba(79, 50, 122, .55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  cursor: pointer;
+  list-style: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.menu__btn::-webkit-details-marker { display: none; }
+.menu__btn:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+
+.menu__icon,
+.menu__icon::before,
+.menu__icon::after {
+  display: block;
+  width: 20px;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transition: transform .3s, background-color .2s;
+}
+.menu__icon { position: relative; }
+.menu__icon::before,
+.menu__icon::after { content: ""; position: absolute; left: 0; }
+.menu__icon::before { top: -6px; }
+.menu__icon::after { top: 6px; }
+.menu[open] .menu__icon { background-color: transparent; }
+.menu[open] .menu__icon::before { transform: translateY(6px) rotate(45deg); }
+.menu[open] .menu__icon::after { transform: translateY(-6px) rotate(-45deg); }
+
+/* Открытый бургер становится кнопкой «Закрыть» на том же месте, даже если страницу успели прокрутить */
+.menu[open] .menu__btn { position: fixed; top: 8px; right: var(--gutter); }
+
+.menu__panel {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 8px var(--gutter) 36px;
+  color: #fff;
+  background:
+    radial-gradient(90% 60% at 80% 0%, rgba(214, 160, 215, .35), transparent 70%),
+    linear-gradient(165deg, #5b3b86 0%, #7a559f 55%, #9467ad 100%);
+}
+
+.menu__home {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  margin-right: 56px;
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.menu__home svg { width: 40px; height: 40px; }
+
+.menu__title { margin: 26px 0 6px; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .75; }
+.menu__title--center { margin-top: 30px; text-align: center; }
+
+/* «О клубе» и «Контакты» — сверху, двумя крупными кнопками на всю ширину: это страницы о самом клубе,
+   а не направления, поэтому они выделены и стоят отдельно от списка */
+.menu__club { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 18px 0 0; padding: 0; list-style: none; }
+.menu__club a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 52px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  color: var(--c-violet-900);
+  font-size: 16px;
+  font-weight: 700;
+  text-decoration: none;
+  background: #fff;
+  box-shadow: 0 6px 18px rgba(40, 10, 70, .25);
+}
+.menu__club svg { flex: none; width: 22px; height: 22px; color: var(--c-pink); }
+.menu__club a[aria-current="page"] {
+  color: #fff;
+  background: rgba(255, 255, 255, .14);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .6);
+}
+.menu__club a[aria-current="page"] svg { color: #fff; }
+
+/* Направления: строки во всю ширину с разделителями и стрелкой справа.
+   --num — колонка с номером; на неё же отступает заголовок, чтобы он стоял ровно над названиями */
+.menu__title--sections { padding-left: var(--num); }
+.menu__sections { margin: 0; padding: 0; list-style: none; }
+.menu__sections a {
+  display: flex;
+  align-items: baseline;
+  padding: 12px 4px 12px 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .16);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+  text-decoration: none;
+}
+.menu__sections a::after {
+  content: "";
+  flex: none;
+  align-self: center;
+  width: 8px;
+  height: 8px;
+  margin: 0 6px 0 auto;
+  border-top: 2px solid currentColor;
+  border-right: 2px solid currentColor;
+  opacity: .75;
+  transform: rotate(45deg);
+}
+.menu__num { flex: none; width: var(--num); color: #f6c3dc; font-size: 15px; font-weight: 500; }
+.menu__sections a[aria-current="page"] { color: #ffd9ea; }
+
+@media (min-width: 900px) { .menu { display: none; } }
+
+@media (max-width: 899px) {
+  .top__links { display: none; }
+  /* Пока меню открыто, страница под ним не прокручивается, а шапка с меню лежит поверх всего */
+  :root:has(.menu[open]) { overflow: hidden; }
+  .top:has(.menu[open]),
+  .hero:has(.menu[open]) { z-index: 100; }
+  .top__bar:has(.menu[open]),
+  .hero__nav:has(.menu[open]) { z-index: 50; }
+}
+
+/* ───────────── Шапка на телефоне ───────────── */
+/* Шапка закреплена сверху: при прокрутке вниз уезжает, при прокрутке вверх возвращается целиком —
+   логотип, «Клуб «Баланс»» и бургер (классы is-hidden и is-pinned ставит js/site.js).
+   Прячем сдвигом top, а не transform: transform сделал бы шапку контейнером для position: fixed,
+   и открытое меню перестало бы занимать весь экран. */
+.hero__brand { display: none; }
+
+@media (max-width: 899px) {
+  .top { z-index: 40; padding-top: 60px; }
+  .top__bar,
+  .hero__nav {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    transition: top .3s ease, background-color .3s, box-shadow .3s;
+  }
+  .top__bar.is-hidden,
+  .hero__nav.is-hidden { top: -80px; }
+  .top__bar.is-pinned { background: rgba(79, 50, 122, .96); box-shadow: 0 6px 20px rgba(40, 10, 70, .25); }
+
+  /* На главной вверху страницы шапка прозрачная — над цветком только бургер; вернувшись, она такая же, как на внутренних */
+  .hero__nav { justify-content: space-between; border-bottom: 1px solid transparent; }
+  .hero__brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #fff;
+    font-size: 17px;
+    font-weight: 600;
+    text-decoration: none;
+    visibility: hidden;
+    opacity: 0;
+    transition: opacity .3s, visibility .3s;
+  }
+  .hero__brand svg { width: 40px; height: 40px; }
+  .hero__nav.is-pinned {
+    border-bottom-color: rgba(247, 205, 185, .35);
+    background: rgba(79, 50, 122, .96);
+    box-shadow: 0 6px 20px rgba(40, 10, 70, .25);
+    pointer-events: auto;
+  }
+  .hero__nav.is-pinned .hero__brand { visibility: visible; opacity: 1; }
+
+  /* Переход по якорю вверх возвращает шапку — заголовок не должен уйти под неё */
+  .content h2[id] { scroll-margin-top: 76px; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .menu[open] .menu__panel { animation: menu-in .25s ease-out; }
+}
+@keyframes menu-in { from { opacity: 0; transform: translateY(-10px); } }
+
+/* ───────────── Логотипы проектов Вячеслава Рузова (страница книг) ───────────── */
+/* Белые знаки с ruzov.info на фирменном фиолетовом: свои разделы ведут на страницы сайта, остальные — наружу */
+.content .projects {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin: 24px 0 32px;
+  padding: 18px;
+  border-radius: 20px;
+  list-style: none;
+  background:
+    radial-gradient(80% 90% at 50% 0%, rgba(214, 160, 215, .4), transparent 70%),
+    linear-gradient(135deg, #4f327a 0%, #7a559f 60%, #9467ad 100%);
+  box-shadow: 0 10px 28px rgba(60, 20, 90, .18);
+}
+.content .projects li { margin: 0; }
+.content .projects a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 124px;
+  padding: 16px;
+  border-radius: 14px;
+  transition: background .2s;
+}
+.content .projects a:hover,
+.content .projects a:focus-visible { background: rgba(255, 255, 255, .12); }
+.content .projects img { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; }
+@media (max-width: 599px) {
+  .content .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; }
+  .content .projects a { height: 100px; padding: 12px; }
+}
+
+/* ───────────── Инфографика: медальоны, карточки, факты, частые вопросы ───────────── */
+/* Иконки и номера стоят на медальоне — той же волнистой форме, что в центре лотоса (tools/blocks.py). */
+
+:root { --medal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23de8fc3'/%3E%3Cstop offset='.55' stop-color='%23b56cb3'/%3E%3Cstop offset='1' stop-color='%237f5bb8'/%3E%3C/linearGradient%3E%3Cpath id='m' d='M50 0.6C52.1 0.6 54.3 1.6 56.2 2.7C58.1 3.8 59.8 5.9 61.5 7.2C63.1 8.5 64.5 9.9 66.3 10.6C68.1 11.4 70 11.4 72.1 11.6C74.3 11.9 76.9 11.6 79 12.2C81.2 12.7 83.5 13.6 84.9 15.1C86.4 16.5 87.3 18.8 87.8 21C88.4 23.1 88.1 25.7 88.4 27.8C88.6 30 88.6 31.9 89.4 33.7C90.1 35.5 91.5 36.9 92.8 38.5C94.1 40.2 96.2 41.9 97.3 43.8C98.4 45.7 99.4 47.9 99.4 50C99.4 52.1 98.4 54.3 97.3 56.2C96.2 58.1 94.1 59.8 92.8 61.5C91.5 63.1 90.1 64.5 89.4 66.3C88.6 68.1 88.6 70 88.4 72.1C88.1 74.3 88.4 76.9 87.8 79C87.3 81.2 86.4 83.5 84.9 84.9C83.5 86.4 81.2 87.3 79 87.8C76.9 88.4 74.3 88.1 72.1 88.4C70 88.6 68.1 88.6 66.3 89.4C64.5 90.1 63.1 91.5 61.5 92.8C59.8 94.1 58.1 96.2 56.2 97.3C54.3 98.4 52.1 99.4 50 99.4C47.9 99.4 45.7 98.4 43.8 97.3C41.9 96.2 40.2 94.1 38.5 92.8C36.9 91.5 35.5 90.1 33.7 89.4C31.9 88.6 30 88.6 27.9 88.4C25.7 88.1 23.1 88.4 21 87.8C18.8 87.3 16.5 86.4 15.1 84.9C13.6 83.5 12.7 81.2 12.2 79C11.6 76.9 11.9 74.3 11.6 72.2C11.4 70 11.4 68.1 10.6 66.3C9.9 64.5 8.5 63.1 7.2 61.5C5.9 59.8 3.8 58.1 2.7 56.2C1.6 54.3 0.6 52.1 0.6 50C0.6 47.9 1.6 45.7 2.7 43.8C3.8 41.9 5.9 40.2 7.2 38.5C8.5 36.9 9.9 35.5 10.6 33.7C11.4 31.9 11.4 30 11.6 27.8C11.9 25.7 11.6 23.1 12.2 21C12.7 18.8 13.6 16.5 15.1 15.1C16.5 13.6 18.8 12.7 21 12.2C23.1 11.6 25.7 11.9 27.8 11.6C30 11.4 31.9 11.4 33.7 10.6C35.5 9.9 36.9 8.5 38.5 7.2C40.2 5.9 41.9 3.8 43.8 2.7C45.7 1.6 47.9 0.6 50 0.6Z'/%3E%3C/defs%3E%3Cuse href='%23m' fill='url(%23g)'/%3E%3Cuse href='%23m' fill='none' stroke='%23fff' stroke-opacity='.55' stroke-width='2.6' transform='translate(50 50) scale(.84) translate(-50 -50)'/%3E%3C/svg%3E"); }
+
+.ico { display: block; width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+.medal {
+  --s: 52px;
+  position: relative;
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  width: var(--s);
+  height: var(--s);
+  color: #fff;
+  background: var(--medal) center / contain no-repeat;
+  filter: drop-shadow(0 6px 10px rgba(111, 76, 151, .26));
+}
+.medal .ico { width: 50%; height: 50%; stroke-width: 2; }
+/* Номер пункта — маленький белый кружок на краю медальона */
+.medal__num {
+  position: absolute;
+  top: -3px;
+  right: -5px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  color: var(--c-violet-900);
+  font-size: 13px;
+  font-weight: 800;
+  background: #fff;
+  box-shadow: 0 2px 6px rgba(79, 50, 122, .3);
+}
+
+/* Нумерованные списки: цифра — в медальоне */
+.content ol { padding-left: 0; list-style: none; counter-reset: step; }
+.content ol > li { position: relative; min-height: 38px; margin-bottom: .9em; padding: 6px 0 0 54px; counter-increment: step; }
+.content ol > li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 700;
+  background: var(--medal) center / contain no-repeat;
+  filter: drop-shadow(0 4px 8px rgba(111, 76, 151, .25));
+}
+
+/* Карточки в ряд: медальон сверху, заголовок, текст. На узком экране — строкой: иконка слева */
+.content .features { display: grid; gap: 14px; margin: 20px 0 26px; padding: 0; list-style: none; }
+.features--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.features--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.content .feature {
+  margin: 0;
+  padding: 22px 20px 20px;
+  border: 1px solid #ead9f0;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(79, 50, 122, .06);
+}
+.feature .medal { margin-bottom: 14px; }
+.content .feature__title { margin: 0 0 6px; color: var(--c-violet-900); font-size: 18px; font-weight: 700; line-height: 1.25; }
+.content .feature__value { margin: 0 0 2px; color: var(--c-pink); font-size: 28px; font-weight: 800; line-height: 1.1; }
+.content .feature p:last-child { margin: 0; font-size: 16px; line-height: 1.5; }
+.content .feature code { overflow-wrap: anywhere; }
+@media (max-width: 759px) {
+  .features--3 { grid-template-columns: 1fr; }
+  .content .feature { display: flex; gap: 16px; align-items: flex-start; padding: 18px; }
+  .feature .medal { --s: 48px; margin: 0; }
+}
+@media (max-width: 599px) { .features--2 { grid-template-columns: 1fr; } }
+
+/* Пункты с крупной иконкой слева: иконка, заголовок и текст выровнены по верхнему краю */
+.content .ilist { display: grid; gap: 14px; margin: 20px 0 26px; padding: 0; list-style: none; }
+@media (min-width: 760px) { .content .ilist--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.content .ilist > li {
+  display: flex;
+  gap: 18px;
+  align-items: flex-start;
+  margin: 0;
+  padding: 18px 20px;
+  border: 1px solid #ead9f0;
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 10px 30px rgba(79, 50, 122, .06);
+}
+.ilist .medal { --s: 64px; }
+.content .ilist__title { margin: 0 0 4px; color: var(--c-violet-900); font-size: 19px; line-height: 1.25; }
+.content .ilist__body p { margin: 0; font-size: 16px; line-height: 1.5; }
+/* На телефоне текст длинный, а колонка узкая: иконка встаёт рядом с заголовком, текст — под ними во всю ширину */
+@media (max-width: 599px) {
+  .content .ilist > li { display: grid; grid-template-columns: auto 1fr; gap: 10px 14px; padding: 16px; }
+  .ilist__body { display: contents; }
+  .content .ilist__title { align-self: center; margin: 0; }
+  .content .ilist__body p { grid-column: 1 / -1; }
+  .ilist .medal { --s: 52px; }
+}
+
+/* Полоса коротких фактов */
+.content .facts { display: grid; gap: 10px; margin: 18px 0 22px; padding: 0; list-style: none; }
+.facts--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.facts--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.content .fact { display: flex; gap: 12px; align-items: center; margin: 0; padding: 14px; border-radius: 18px; background: #f4e8f6; }
+.fact .medal { --s: 44px; }
+.content .fact p { margin: 0; line-height: 1.25; }
+.fact strong { display: block; color: var(--c-violet-900); font-size: 17px; }
+.fact p > span { display: block; margin-top: 2px; color: #6b5a7d; font-size: 14px; }
+@media (max-width: 899px) { .facts--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 599px) {
+  .facts--3 { grid-template-columns: 1fr; }
+  .content .fact { padding: 12px; }
+}
+@media (max-width: 399px) { .facts--4 { grid-template-columns: 1fr; } }
+
+/* Тема каталога книг: медальон с иконкой перед названием */
+.content h3.theme { display: flex; gap: 14px; align-items: center; margin-top: 32px; }
+.theme .medal { --s: 46px; }
+
+/* Частые вопросы: вопрос — плашка, ответ раскрывается по нажатию */
+.faq-list { display: grid; gap: 10px; margin: 18px 0 30px; }
+.content .faq {
+  border: 1px solid #ead9f0;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 6px 20px rgba(79, 50, 122, .05);
+  transition: border-color .2s, box-shadow .2s;
+}
+.content .faq[open] { border-color: #dcc0e6; box-shadow: 0 10px 28px rgba(79, 50, 122, .1); }
+.faq summary {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 20px;
+  border-radius: 18px;
+  cursor: pointer;
+  list-style: none;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary:focus-visible { outline: 3px solid var(--c-violet-500); outline-offset: 2px; }
+.content .faq h3 { flex: 1; margin: 0; font-size: 18px; line-height: 1.35; }
+/* Значок «+», который в открытом вопросе становится «−» */
+.faq summary::after {
+  content: "";
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background:
+    linear-gradient(#fff, #fff) center / 12px 2px no-repeat,
+    linear-gradient(#fff, #fff) center / 2px 12px no-repeat,
+    linear-gradient(135deg, #d27fb8, #8a63bd);
+  transition: transform .3s;
+}
+.faq[open] summary::after {
+  background:
+    linear-gradient(#fff, #fff) center / 12px 2px no-repeat,
+    linear-gradient(135deg, #d27fb8, #8a63bd);
+  transform: rotate(180deg);
+}
+.faq__a { padding: 0 20px 18px; }
+.content .faq__a p { margin: 0; }
+@media (max-width: 599px) {
+  .faq summary { padding: 14px 16px; }
+  .faq__a { padding: 0 16px 16px; }
+  .content .faq h3 { font-size: 17px; }
+}
+/* Плавное раскрытие — там, где браузер умеет анимировать высоту до auto */
+@supports (interpolate-size: allow-keywords) {
+  .faq { interpolate-size: allow-keywords; }
+  .faq::details-content { height: 0; overflow: clip; transition: height .3s ease, content-visibility .3s allow-discrete; }
+  .faq[open]::details-content { height: auto; }
+}
+
+/* Кнопка-чип с иконкой (контакты групп) */
+.content .chip {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 14px;
+  border-radius: 999px;
+  color: var(--c-violet-900);
+  font-size: 15px;
+  font-weight: 600;
+  text-decoration: none;
+  background: #f4e8f6;
+  transition: background .2s;
+}
+.content .chip:hover,
+.content .chip:focus-visible { background: #ead3f1; }
+.chip .ico { width: 18px; height: 18px; color: var(--c-pink); }
+.chip small { color: #8a7a9b; font-size: 12px; font-weight: 600; }
+
+@media (prefers-reduced-motion: reduce) {
+  .faq summary::after { transition: none; }
+  .faq::details-content { transition: none; }
+}
+
+/* ───────────── Кнопка радио в шапке и в мобильном меню ───────────── */
+/* Есть всегда (js/radio.js): в покое — иконка радио и «плей», в эфире — «прыгающий» эквалайзер,
+   при наведении в эфире — «пауза». Нажатие включает эфир или ставит его на паузу. */
+.radio-live {
+  display: inline-flex;
+  flex: none;
+  gap: 7px;
+  align-items: center;
+  height: 44px;
+  margin-left: auto;
+  padding: 0 14px 0 12px;
+  border: 1px solid rgba(255, 255, 255, .6);
+  border-radius: 999px;
+  color: #fff;
+  font: inherit;
+  background: rgba(79, 50, 122, .55);
+  cursor: pointer;
+  pointer-events: auto;
+  -webkit-tap-highlight-color: transparent;
+  transition: background .2s, border-color .2s;
+}
+.radio-live:hover,
+.radio-live:focus-visible { border-color: #fff; background: rgba(255, 255, 255, .24); }
+.radio-live:focus-visible { outline: 3px solid #fff; outline-offset: 2px; }
+.radio-live.is-playing,
+.radio-live.is-loading { border-color: #f6c3dc; background: rgba(198, 101, 165, .45); }
+.radio-live .radio-live__icon { width: 22px; height: 22px; }
+.radio-live .rstate { color: #f6c3dc; }
+
+/* Значок состояния: «плей», эквалайзер или «пауза» в одной ячейке */
+.rstate { display: grid; place-items: center; width: 16px; height: 16px; }
+.rstate > * { grid-area: 1 / 1; }
+.rstate .ico { width: 15px; height: 15px; fill: currentColor; }
+.rstate__pause,
+.rstate__eq { display: none; }
+.rstate__eq { gap: 2px; align-items: flex-end; width: 13px; height: 16px; }
+.rstate__eq i { flex: 1; height: 100%; border-radius: 2px; background: currentColor; transform-origin: bottom; transform: scaleY(.45); }
+.is-playing .rstate__play,
+.is-loading .rstate__play { display: none; }
+.is-playing .rstate__eq,
+.is-loading .rstate__eq { display: flex; }
+@media (hover: hover) {
+  .is-playing:hover .rstate__eq,
+  .is-playing:focus-visible .rstate__eq { display: none; }
+  .is-playing:hover .rstate__pause,
+  .is-playing:focus-visible .rstate__pause { display: block; }
+}
+
+.hero__nav { gap: 10px; }
+@media (min-width: 900px) {
+  .radio-live { height: 36px; }
+  .hero__nav .radio-live { height: max(38px, calc(66 * var(--u))); padding-inline: max(12px, calc(22 * var(--u))); }
+}
+
+/* Плашка радио в мобильном меню: крупная кнопка эфира с названием передачи */
+.menu__radio {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  width: 100%;
+  margin: 12px 0 0;
+  padding: 10px 16px 10px 10px;
+  border: 1px solid rgba(255, 255, 255, .35);
+  border-radius: 16px;
+  color: #fff;
+  font: inherit;
+  text-align: left;
+  background: rgba(255, 255, 255, .1);
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.menu__radio.is-playing,
+.menu__radio.is-loading { border-color: #f6c3dc; background: rgba(198, 101, 165, .35); }
+.menu__radio-icon { display: grid; flex: none; place-items: center; width: 44px; height: 44px; border-radius: 50%; color: var(--c-violet-700); background: #fff; }
+.menu__radio-icon .rstate { width: 20px; height: 20px; }
+.menu__radio-icon .rstate .ico { width: 18px; height: 18px; }
+.menu__radio-icon .rstate__eq { width: 16px; height: 18px; }
+.menu__radio-text { min-width: 0; }
+.menu__radio-text strong { display: block; font-size: 16px; }
+.menu__radio-note {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: 13px;
+  line-height: 1.35;
+  opacity: .85;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rstate__eq i { animation: radio-eq .8s ease-in-out infinite alternate; }
+  .rstate__eq i:nth-child(2) { animation-delay: -.35s; }
+  .rstate__eq i:nth-child(3) { animation-delay: -.6s; }
+  .is-loading .rstate__eq i { animation-duration: .35s; }
+}
+
+/* После перехода без перезагрузки фокус стоит на заголовке страницы — рамка там не нужна */
+h1[tabindex="-1"]:focus { outline: none; }

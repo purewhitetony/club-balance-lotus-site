@@ -3,6 +3,9 @@
 (() => {
   const map = document.querySelector('[data-libmap]');
   if (!map) return;
+  // Обработчики на window и document снимаются по этому сигналу, когда радио открывает
+  // следующую страницу без перезагрузки (js/radio.js)
+  const { signal } = (window.__page ??= new AbortController());
   const points = [...map.querySelectorAll('.libmap__pt')];
 
   // Задержка появления — с запада на восток, чтобы книжки «разлетались» по карте
@@ -14,6 +17,7 @@
       if (entries.some((e) => e.isIntersecting)) { reveal(); io.disconnect(); }
     }, { threshold: 0.25 });
     io.observe(map);
+    signal.addEventListener('abort', () => io.disconnect());
   }
 
   let open = null;
@@ -25,5 +29,5 @@
     open = pt;
     pt.classList.add('is-open');
   });
-  document.addEventListener('click', (e) => { if (!map.contains(e.target)) close(); });
+  document.addEventListener('click', (e) => { if (!map.contains(e.target)) close(); }, { signal });
 })();

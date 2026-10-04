@@ -2,6 +2,9 @@
 // Без JS лента всё равно прокручивается пальцем, колесом и клавиатурой.
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  // Обработчики на window и document снимаются по этому сигналу, когда радио открывает
+  // следующую страницу без перезагрузки (js/radio.js)
+  const { signal } = (window.__page ??= new AbortController());
 
   document.querySelectorAll('[data-carousel]').forEach((carousel) => {
     const track = carousel.querySelector('.carousel__track');
@@ -24,7 +27,7 @@
     });
 
     track.addEventListener('scroll', update, { passive: true });
-    addEventListener('resize', update);
+    addEventListener('resize', update, { signal });
     update();
   });
 })();

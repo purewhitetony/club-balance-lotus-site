@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Контакты клуба «Баланс» — Москва, м. Парк Победы, ул. Дениса Давыдова, 3</title>
   <meta name="description" content="Адрес, телефон и время работы клуба «Баланс»: Москва, м. Парк Победы, ул. Дениса Давыдова, д. 3. Пн–Сб с 10:00 до 22:00. Карта, как добраться и форма обратной связи.">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
   <link rel="stylesheet" href="css/site.css">
   <script type="application/ld+json">{"@context": "https://schema.org", "@type": "LocalBusiness", "name": "Клуб «Баланс»", "description": "Культурно-просветительский центр в Москве: книги, лекции, ретриты, семейные программы, встречи о здоровом образе жизни, радио, онлайн-каналы и индийские танцы.", "address": {"@type": "PostalAddress", "addressCountry": "RU", "addressLocality": "Москва", "streetAddress": "ул. Дениса Давыдова, д. 3"}, "geo": {"@type": "GeoCoordinates", "latitude": 55.737901, "longitude": 37.517609}, "telephone": "+7-985-970-03-86", "email": "info@lectorium108.ru", "openingHoursSpecification": {"@type": "OpeningHoursSpecification", "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"], "opens": "10:00", "closes": "22:00"}}</script>
 </head>
@@ -37,22 +40,60 @@
     <linearGradient id="g-float" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#ffe9ee"/><stop offset=".6" stop-color="#f4b3cb"/><stop offset="1" stop-color="#e687b0"/>
     </linearGradient>
-  </defs>
+  <symbol id="i-player-pause" viewBox="0 0 24 24"><path d="M6 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/> <path d="M14 5m0 1a1 1 0 0 1 1 -1h2a1 1 0 0 1 1 1v12a1 1 0 0 1 -1 1h-2a1 1 0 0 1 -1 -1z"/></symbol><symbol id="i-player-play" viewBox="0 0 24 24"><path d="M7 4v16l13 -8z"/></symbol><symbol id="i-radio" viewBox="0 0 24 24"><path d="M14 3l-9.371 3.749a1 1 0 0 0 -.629 .928v11.323a1 1 0 0 0 1 1h14a1 1 0 0 0 1 -1v-11a1 1 0 0 0 -1 -1h-14.5"/> <path d="M4 12h16"/> <path d="M7 12v-2"/> <path d="M17 16v.01"/> <path d="M13 16v.01"/></symbol><!-- иконки: Tabler Icons, MIT --></defs>
 </svg>
 
 <header class="top">
-  <div class="top__bar">
+  <div class="top__bar" data-headroom>
     <a class="top__home" href="index.html">
       <svg aria-hidden="true" focusable="false"><use href="#logo"/></svg>
       Клуб «Баланс»
     </a>
+    <button class="radio-live" type="button" data-radio-live data-stream="https://himalaya24-stream.ru:1045/stream" data-status="https://himalaya24-stream.ru:1045/status-json.xsl" aria-pressed="false" aria-label="Слушать радио «Гималаи»"><svg class="ico radio-live__icon" aria-hidden="true" focusable="false"><use href="#i-radio"/></svg><span class="rstate" aria-hidden="true"><svg class="ico rstate__play" aria-hidden="true" focusable="false"><use href="#i-player-play"/></svg><svg class="ico rstate__pause" aria-hidden="true" focusable="false"><use href="#i-player-pause"/></svg><span class="rstate__eq"><i></i><i></i><i></i></span></span></button>
     <nav class="top__links" aria-label="О клубе и контакты">
       <a class="pill-btn" href="o-klube.html">О клубе</a>
       <a class="pill-btn" href="kontakty.html" aria-current="page">Контакты</a>
     </nav>
+    <details class="menu" data-menu>
+      <summary class="menu__btn" aria-label="Меню"><span class="menu__icon" aria-hidden="true"></span></summary>
+      <div class="menu__panel">
+        <a class="menu__home" href="index.html"><svg aria-hidden="true" focusable="false"><use href="#logo"/></svg>Клуб «Баланс»</a>
+        <nav aria-label="Меню сайта">
+          <ul class="menu__club">
+            <li><a href="o-klube.html"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="9.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M12 10.6v6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/><circle cx="12" cy="7.3" r="1.35" fill="currentColor"/></svg>О клубе</a></li>
+            <li><a href="kontakty.html" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 2.2a7.3 7.3 0 0 0-7.3 7.3c0 5.4 7.3 12.3 7.3 12.3s7.3-6.9 7.3-12.3A7.3 7.3 0 0 0 12 2.2Zm0 10a2.7 2.7 0 1 1 0-5.4 2.7 2.7 0 0 1 0 5.4Z" fill="currentColor"/></svg>Контакты</a></li>
+          </ul>
+          <button class="menu__radio" type="button" data-radio-play aria-pressed="false">
+            <span class="menu__radio-icon"><span class="rstate" aria-hidden="true"><svg class="ico rstate__play" aria-hidden="true" focusable="false"><use href="#i-player-play"/></svg><svg class="ico rstate__pause" aria-hidden="true" focusable="false"><use href="#i-player-pause"/></svg><span class="rstate__eq"><i></i><i></i><i></i></span></span></span>
+            <span class="menu__radio-text"><strong>Радио «Гималаи»</strong><span class="menu__radio-note" data-radio-note>Слушать эфир</span></span>
+          </button>
+          <p class="menu__title menu__title--sections">Направления клуба</p>
+          <ul class="menu__sections">
+            <li><a href="utrennie-nastrojki.html"><span class="menu__num" aria-hidden="true">1</span>Утренние настройки</a></li>
+            <li><a href="vechernie-vstrechi.html"><span class="menu__num" aria-hidden="true">2</span>Вечерние встречи</a></li>
+            <li><a href="knigi-ruzova.html"><span class="menu__num" aria-hidden="true">3</span>Книги Рузова В.О.</a></li>
+            <li><a href="studiya-indijskogo-tanca.html"><span class="menu__num" aria-hidden="true">4</span>Студия танца</a></li>
+            <li><a href="joga-razuma.html"><span class="menu__num" aria-hidden="true">5</span>Онлайн встречи</a></li>
+            <li><a href="radio-gimalai.html"><span class="menu__num" aria-hidden="true">6</span>Радио Гималаи</a></li>
+            <li><a href="bibliotechnaya-programma.html"><span class="menu__num" aria-hidden="true">7</span>Библиотечная программа</a></li>
+            <li><a href="video-arhiv.html"><span class="menu__num" aria-hidden="true">8</span>Видео архив</a></li>
+            <li><a href="shkola-astrologii.html"><span class="menu__num" aria-hidden="true">9</span>Школа астрологии</a></li>
+          </ul>
+        </nav>
+        <p class="menu__title menu__title--center">Наши информационные ресурсы</p>
+        <ul class="resources__list">
+          <li><a href="https://max.ru/channel_ruzov" target="_blank" rel="noopener">MAX</a></li>
+          <li><a href="https://rutube.ru/channel/24004512/" target="_blank" rel="noopener">Rutube</a></li>
+          <li><a href="https://www.instagram.com/vyacheslav.ruzov/" target="_blank" rel="noopener">Instagram</a></li>
+          <li><a href="https://t.me/+ypNXqR2cGnRhNGJi" target="_blank" rel="noopener">Telegram</a></li>
+          <li><a href="https://vkvideo.ru/@id16176319" target="_blank" rel="noopener">VK Видео</a></li>
+        </ul>
+      </div>
+    </details>
   </div>
 
   <div class="top__hero" style="--cur:0">
+    <img class="top__photo" src="img/shapki/kontakty.webp" alt="" style="object-position:45% 40%" decoding="async">
     <div class="wheel" data-wheel>
       <div class="wheel__disc">
         <svg class="wheel__back" viewBox="-850 -850 1700 1700" aria-hidden="true" focusable="false">
@@ -201,14 +242,12 @@
       </div>
       <a class="wheel__center" href="index.html" aria-label="Главная — клуб «Баланс»">
         <svg class="wheel__plate" viewBox="-330 -330 660 660" aria-hidden="true" focusable="false">
-          <use href="#p-medal" fill="url(#g-medal-edge)" stroke="url(#g-rim)" stroke-width="2.5"/>
+          <use class="wheel__hit" href="#p-medal" fill="url(#g-medal-edge)" stroke="url(#g-rim)" stroke-width="2.5"/>
           <use href="#p-medal" transform="scale(.94)" fill="none" stroke="url(#g-rim)" stroke-width="2" opacity=".8"/>
           <use href="#p-medal" transform="scale(.875)" fill="url(#g-medal)" stroke="url(#g-rim)" stroke-width="1.6"/>
         </svg>
         <svg class="wheel__logo" aria-hidden="true" focusable="false"><use href="#logo"/></svg>
       </a>
-      <a class="wheel__spin wheel__spin--next" href="vechernie-vstrechi.html" data-step="1" aria-label="Следующий раздел: Вечерние встречи" title="Следующий раздел: Вечерние встречи"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <a class="wheel__spin wheel__spin--prev" href="shkola-astrologii.html" data-step="-1" aria-label="Предыдущий раздел: Школа астрологии" title="Предыдущий раздел: Школа астрологии"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
     </div>
     <div class="top__inner">
       <div class="top__title">
@@ -283,9 +322,10 @@
 </div>
 
 <button class="to-top" type="button" data-to-top aria-label="Наверх" title="Наверх"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 5 8 12l7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-<footer class="footer">Клуб «Баланс»</footer>
+<footer class="footer">© 2026 Клуб «Баланс». Все права защищены.</footer>
 <script src="js/wheel.js" defer></script>
 <script src="js/site.js" defer></script>
 <script src="js/feedback.js" defer></script>
+<script src="js/radio.js" defer></script>
 </body>
 </html>

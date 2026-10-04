@@ -1,27 +1,66 @@
-// Лотос-хэдер: псевдо-3D от движения мыши и подсказка раздела в центре.
-// Без JS хэдер остаётся рабочим: ссылки, hover и раскрытие сделаны на CSS.
+// Лотос на главной: описание раздела в центре, псевдо-3D от движения мыши и выбор лепестка касанием.
+// Без JS лотос остаётся рабочим: лепестки — обычные ссылки, наведение и раскрытие сделаны на CSS.
 (() => {
   const hero = document.querySelector('[data-lotus-hero]');
   if (!hero) return;
+  // Обработчики на window и document снимаются по этому сигналу, когда радио открывает
+  // следующую страницу без перезагрузки (js/radio.js)
+  const { signal } = (window.__page ??= new AbortController());
 
   const center = hero.querySelector('.lotus__center');
   const infoName = hero.querySelector('.center__info-name');
   const infoDesc = hero.querySelector('.center__info-desc');
+  const go = hero.querySelector('.center__go');
   const links = [...hero.querySelectorAll('.petal__link')];
 
-  links.forEach((link) => {
-    const show = () => {
-      infoName.textContent = link.dataset.name;
-      infoDesc.textContent = link.dataset.desc;
-      center.classList.add('is-info');
-    };
-    const hide = () => center.classList.remove('is-info');
-    link.addEventListener('pointerenter', show);
-    link.addEventListener('pointerleave', hide);
-    link.addEventListener('focus', show);
-    link.addEventListener('blur', hide);
-  });
+  // ── Описание раздела в центре ──
+  // Мышь и клавиатура: описание при наведении или фокусе, клик сразу открывает раздел.
+  // Касание: первое касание выбирает лепесток и показывает описание с кнопкой «Перейти»,
+  // второе касание того же лепестка открывает раздел.
+  let picked = null;
+  let touch = false; // последнее нажатие было пальцем или пером, а не мышью
 
+  const show = (link) => {
+    infoName.textContent = link.dataset.name;
+    infoDesc.textContent = link.dataset.desc;
+    center.classList.add('is-info');
+  };
+  const hide = () => {
+    if (picked) show(picked);
+    else center.classList.remove('is-info');
+  };
+  const pick = (link) => {
+    picked?.classList.remove('is-picked');
+    picked = link;
+    center.classList.toggle('is-picked', !!link);
+    if (!link) { hide(); return; }
+    link.classList.add('is-picked');
+    go.href = link.href;
+    show(link);
+  };
+
+  hero.addEventListener('pointerdown', (e) => { touch = e.pointerType !== 'mouse'; }, true);
+  links.forEach((link) => {
+    link.addEventListener('pointerenter', (e) => { if (e.pointerType === 'mouse') show(link); });
+    link.addEventListener('pointerleave', (e) => { if (e.pointerType === 'mouse') hide(); });
+    link.addEventListener('focus', () => { if (link.matches(':focus-visible')) show(link); });
+    link.addEventListener('blur', hide);
+    link.addEventListener('click', (e) => {
+      const tap = touch;
+      touch = false; // Enter с клавиатуры после касания — уже не касание
+      if (!tap || picked === link) return;
+      e.preventDefault();
+      pick(link);
+    });
+  });
+  // Касание мимо лепестков снимает выбор
+  document.addEventListener('click', (e) => {
+    if (picked && !e.target.closest('.petal__link, .center__go')) pick(null);
+  }, { signal });
+  // Возврат «Назад» из кэша: цветок снова в исходном виде
+  addEventListener('pageshow', (e) => { if (e.persisted) pick(null); }, { signal });
+
+  // ── Псевдо-3D на десктопе ──
   const desktop = matchMedia('(min-width: 900px) and (hover: hover) and (pointer: fine)');
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 
@@ -84,11 +123,16 @@
     }
   };
 
-  new IntersectionObserver(([entry]) => {
+  const io = new IntersectionObserver(([entry]) => {
     visible = entry.isIntersecting;
     update();
-  }).observe(hero);
-  desktop.addEventListener('change', update);
-  reduced.addEventListener('change', update);
+  });
+  io.observe(hero);
+  desktop.addEventListener('change', update, { signal });
+  reduced.addEventListener('change', update, { signal });
+  signal.addEventListener('abort', () => {
+    io.disconnect();
+    cancelAnimationFrame(raf);
+  });
   update();
 })();
