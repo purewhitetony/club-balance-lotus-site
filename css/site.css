@@ -172,7 +172,9 @@ body {
   pointer-events: none;
 }
 .center__info-name { margin: 0; font-size: max(15px, calc(38 * var(--u))); font-weight: 700; line-height: 1.05; }
-.center__info-desc { margin: calc(12 * var(--u)) 0 0; font-size: max(12px, calc(24 * var(--u))); line-height: 1.2; opacity: .92; }
+/* Длинные описания («Ведическая астрология, нумерология, хиромантия») переносятся на 2–3 ровные строки
+   и не доходят до края медальона */
+.center__info-desc { max-width: calc(360 * var(--u)); margin: calc(12 * var(--u)) auto 0; font-size: max(12px, calc(24 * var(--u))); line-height: 1.2; opacity: .92; text-wrap: balance; }
 .center__go { display: none; }
 .lotus__center.is-info .center__title { opacity: 0; transform: translateY(calc(-10 * var(--u))); }
 .lotus__center.is-info .center__info { opacity: 1; transform: none; }
@@ -185,6 +187,7 @@ body {
   margin-left: calc(-250 * var(--u));
   transform: translateY(-50%);
 }
+.lotus__center.is-picked .center__info-desc { max-width: calc(410 * var(--u)); }
 .lotus__center.is-picked .center__go {
   display: inline-block;
   margin-top: max(8px, calc(18 * var(--u)));
@@ -752,7 +755,8 @@ body {
 .content .booklist li:last-child { border-bottom: 0; }
 .booklist li::before { content: ""; position: absolute; top: 1.05em; left: 4px; width: 7px; height: 7px; border-radius: 50%; background: var(--c-pink); }
 .booklist cite { color: var(--c-violet-900); font-style: normal; font-weight: 700; }
-.booklist a cite { color: inherit; }
+.booklist a { text-decoration-color: rgba(111, 76, 151, .45); }
+.booklist a:hover cite { color: var(--c-violet-700); }
 .badge {
   display: inline-block;
   margin-left: 4px;
@@ -1568,8 +1572,10 @@ body {
 /* ───────────── Логотипы проектов Вячеслава Рузова (страница книг) ───────────── */
 /* Белые знаки с ruzov.info на фирменном фиолетовом: свои разделы ведут на страницы сайта, остальные — наружу */
 .content .projects {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  --cols: 4;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 6px;
   margin: 24px 0 32px;
   padding: 18px;
@@ -1580,7 +1586,8 @@ body {
     linear-gradient(135deg, #4f327a 0%, #7a559f 60%, #9467ad 100%);
   box-shadow: 0 10px 28px rgba(60, 20, 90, .18);
 }
-.content .projects li { margin: 0; }
+.content .projects li { flex: 0 0 calc((100% - (var(--cols) - 1) * 6px) / var(--cols)); margin: 0; }
+@media (max-width: 899px) { .content .projects { --cols: 3; } }
 .content .projects a {
   display: flex;
   align-items: center;
@@ -1594,7 +1601,7 @@ body {
 .content .projects a:focus-visible { background: rgba(255, 255, 255, .12); }
 .content .projects img { display: block; width: auto; height: auto; max-width: 100%; max-height: 100%; }
 @media (max-width: 599px) {
-  .content .projects { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 10px; }
+  .content .projects { --cols: 2; padding: 10px; }
   .content .projects a { height: 100px; padding: 12px; }
 }
 
@@ -2234,3 +2241,19 @@ h1[tabindex="-1"]:focus { outline: none; }
 .content .platform__name { margin: 0 0 4px; color: var(--c-violet-900); font-size: 19px; }
 .content .platform p { margin: 0 0 8px; font-size: 15px; line-height: 1.5; }
 .content .platform a { font-size: 15px; font-weight: 700; }
+
+/* Плашка Boosty на страницах разделов (blocks.boosty_panel): та же тёмная «эксклюзивная» панель, что в видеоархиве */
+.excl--panel { margin: 20px 0 8px; padding: 24px; }
+.excl__body > * + * { margin-top: 16px; }
+.excl--split { display: grid; gap: 20px; align-items: center; }
+@media (min-width: 600px) { .excl--split { grid-template-columns: minmax(0, 220px) minmax(0, 1fr); } }
+.excl__media { display: block; overflow: hidden; aspect-ratio: 3 / 2; border: 1px solid rgba(255, 255, 255, .18); border-radius: 14px; }
+.excl__media img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
+.excl__media:hover img { transform: scale(1.04); }
+.content .excl__points { display: grid; gap: 12px; padding: 0; list-style: none; }
+@media (min-width: 760px) { .content .excl__points { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.content .excl__points li { display: flex; gap: 12px; align-items: flex-start; margin: 0; padding: 14px; border: 1px solid rgba(255, 255, 255, .14); border-radius: 16px; background: rgba(255, 255, 255, .07); }
+.excl__points .medal { --s: 42px; }
+.content .excl__points p { margin: 0; color: #e6d8ef; font-size: 15px; line-height: 1.45; }
+.excl__points strong { display: block; margin-bottom: 2px; color: #fff; font-size: 16px; }
+@media (max-width: 599px) { .excl--panel { margin-inline: 0; padding: 20px 16px; } }
