@@ -1072,6 +1072,8 @@ body {
 /* Цитата из писаний и встроенное видео */
 .content .quote { margin: 20px 0; padding: 18px 22px; border-left: 4px solid var(--c-pink); border-radius: 0 16px 16px 0; color: var(--c-violet-900); background: #f4e8f6; }
 .content .quote p { margin: 0; font-size: 17px; font-style: italic; line-height: 1.6; }
+.content .quote blockquote { margin: 0; }
+.content .quote figcaption { margin-top: 10px; color: #6b5a7d; font-size: 14px; }
 
 .video { position: relative; overflow: hidden; margin: 20px 0 8px; border-radius: 16px; background: #1d1028; aspect-ratio: 16 / 9; }
 .video iframe { display: block; width: 100%; height: 100%; border: 0; }
@@ -2243,9 +2245,11 @@ h1[tabindex="-1"]:focus { outline: none; }
 .content .platform a { font-size: 15px; font-weight: 700; }
 
 /* Плашка Boosty на страницах разделов (blocks.boosty_panel): та же тёмная «эксклюзивная» панель, что в видеоархиве */
-.excl--panel { margin: 20px 0 8px; padding: 24px; }
-.excl__body > * + * { margin-top: 16px; }
-.excl--split { display: grid; gap: 20px; align-items: center; }
+.excl--panel { margin: 20px 0 8px; padding: 28px; }
+.content .excl--panel .excl__body > * { margin: 0; }
+.content .excl--panel .excl__body > * + * { margin-top: 18px; }
+.content .excl--panel .excl__body > .excl__cta { margin-top: 24px; }
+.excl--split { display: grid; gap: 24px; align-items: center; }
 @media (min-width: 600px) { .excl--split { grid-template-columns: minmax(0, 220px) minmax(0, 1fr); } }
 .excl__media { display: block; overflow: hidden; aspect-ratio: 3 / 2; border: 1px solid rgba(255, 255, 255, .18); border-radius: 14px; }
 .excl__media img { width: 100%; height: 100%; object-fit: cover; transition: transform .3s; }
